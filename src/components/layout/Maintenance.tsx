@@ -43,15 +43,15 @@ const RAW_PAGES: RawPage[] = [
     number: "01",
     name: "Home",
     description:
-      "Cinematic intro, hero, camera scene and scrolling sections built; awaiting final media.",
-    status: "In active development",
-    state: "active",
+      "Cinematic experience built and tested; awaiting Offscript's footage, About intro and footer details.",
+    status: "Awaiting content",
+    state: "pending",
     previewLabel: "Homepage chapters",
     preview: [
       { name: "Intro Loader", progress: 100 },
       { name: "OFFSCRIPT Footage Mask", progress: 100 },
       { name: "Final Hero Footage (Offscript)", progress: 30, waiting: true },
-      { name: "Viewfinder Frame & Camera HUD", progress: 90 },
+      { name: "Viewfinder Frame & Camera HUD", progress: 100 },
       { name: "3D Camera Scene (Scroll Orbit)", progress: 100 },
       { name: "Work Reel Layout", progress: 100 },
       { name: "Capabilities Scroll Stage", progress: 100 },
@@ -87,8 +87,8 @@ const RAW_PAGES: RawPage[] = [
     preview: [
       { name: "Service Names & Order", progress: 100 },
       { name: "Page Structure & Header", progress: 100 },
-      { name: "Interactive Service Explorer (Hover, Click & Media Wipes)", progress: 90 },
-      { name: "Mobile & Touch Behaviour (Tap to Open)", progress: 90 },
+      { name: "Interactive Service Explorer (Hover, Click & Media Wipes)", progress: 100 },
+      { name: "Mobile & Touch Behaviour (Tap to Open)", progress: 100 },
       { name: "Service Descriptions (Offscript)", progress: 0, waiting: true },
       { name: "Service Photography (Offscript)", progress: 0, waiting: true },
     ],
@@ -97,14 +97,14 @@ const RAW_PAGES: RawPage[] = [
     number: "04",
     name: "Work",
     description:
-      "Portfolio and project pages built; cinematic transitions and rich content underway.",
+      "Portfolio, project pages and cinematic transitions built; rich project content still to come.",
     status: "Design in progress",
     state: "active",
     previewLabel: "Development roadmap",
     preview: [
       { name: "Portfolio Listing Page", progress: 100 },
       { name: "Project Detail Pages", progress: 80 },
-      { name: "Cinematic Transitions & Scroll Animations", progress: 40 },
+      { name: "Cinematic Transitions & Scroll Animations", progress: 100 },
       { name: "Rich Project Content (Photos, Video, Text)", progress: 0 },
       { name: "Real Projects & Media (Offscript)", progress: 0, waiting: true },
     ],
@@ -190,13 +190,14 @@ const WAITING_TASKS = ALL_ITEMS.filter(
 
 /** Update messages shown in the feed. Written by hand; not a live build log. */
 const DEVELOPMENT_LOGS = [
-  "Homepage intro, camera scene and viewfinder frame built — final review pending.",
+  "Homepage experience built and tested — awaiting Offscript's footage and details.",
   "Services now has an interactive explorer — awaiting Offscript's descriptions and photography.",
   "Layouts are complete with placeholder media — awaiting Offscript's photography and video.",
   "Enquiry form prepares a ready-to-send email — contact details awaited from Offscript.",
   "Privacy and Terms drafted — awaiting company details and legal review.",
 ];
 
+const FEED_INTERVAL_MS = 4000;
 const TIME_ZONE = "Asia/Colombo";
 
 const STATUS_STYLES: Record<PageState, { text: string; dot: string }> = {
@@ -225,6 +226,7 @@ export default function Maintenance() {
   const [localTime, setLocalTime] = useState("");
   const [expandedPage, setExpandedPage] = useState<string | null>(null);
   const [logIndex, setLogIndex] = useState(0);
+  const [feedOpen, setFeedOpen] = useState(false);
 
   const statusPanelRef = useRef<HTMLDivElement>(null);
   const year = new Date().getFullYear();
@@ -245,16 +247,20 @@ export default function Maintenance() {
     updateClock();
     const interval = window.setInterval(updateClock, 1000);
 
-    // Rotate development update messages every 4 seconds
-    const logInterval = window.setInterval(() => {
-      setLogIndex((prev) => (prev + 1) % DEVELOPMENT_LOGS.length);
-    }, 4000);
-
     return () => {
       window.clearInterval(interval);
-      window.clearInterval(logInterval);
     };
   }, []);
+
+  // Rotate the update messages. Pauses while the mobile list is open, and
+  // restarts whenever the message changes (including when one is tapped).
+  useEffect(() => {
+    if (feedOpen) return;
+    const timer = window.setTimeout(() => {
+      setLogIndex((prev) => (prev + 1) % DEVELOPMENT_LOGS.length);
+    }, FEED_INTERVAL_MS);
+    return () => window.clearTimeout(timer);
+  }, [logIndex, feedOpen]);
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     if (
@@ -283,6 +289,9 @@ export default function Maintenance() {
       current === pageName ? null : pageName,
     );
   };
+
+  const feedCount = String(DEVELOPMENT_LOGS.length).padStart(2, "0");
+  const feedPosition = String(logIndex + 1).padStart(2, "0");
 
   return (
     <main
@@ -527,8 +536,8 @@ export default function Maintenance() {
             </div>
           </div>
 
-          {/* Development Update Feed Ticker */}
-          <div className="mb-5 flex items-center gap-2.5 rounded-md border border-white/[0.06] bg-black/40 px-3 py-2 text-[0.62rem]">
+          {/* Development Update Feed: single-line ticker on tablet and desktop */}
+          <div className="mb-5 hidden items-center gap-2.5 rounded-md border border-white/[0.06] bg-black/40 px-3 py-2 text-[0.62rem] sm:flex">
             <span className="type-mono text-[#C7A46A] shrink-0 font-semibold">[DEVELOPMENT UPDATE FEED]</span>
             <AnimatePresence mode="wait">
               <motion.span
@@ -541,6 +550,167 @@ export default function Maintenance() {
               >
                 {DEVELOPMENT_LOGS[logIndex]}
               </motion.span>
+            </AnimatePresence>
+          </div>
+
+          {/* Development Update Feed: tap-to-expand card on phones */}
+          <div className="mb-5 overflow-hidden rounded-md border border-white/[0.06] bg-black/40 sm:hidden">
+            <button
+              type="button"
+              onClick={() => setFeedOpen((open) => !open)}
+              aria-expanded={feedOpen}
+              aria-controls="update-feed-list"
+              className="relative block w-full px-3 py-3 text-left transition-colors duration-300 active:bg-white/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#C7A46A]"
+            >
+              <span className="flex items-center justify-between gap-3">
+                <span className="type-mono text-[0.58rem] font-semibold tracking-[0.1em] text-[#C7A46A]">
+                  [DEVELOPMENT UPDATE FEED]
+                </span>
+
+                <span className="flex items-center gap-2.5">
+                  <span className="type-mono text-[0.55rem] tabular-nums text-ash">
+                    {feedPosition} / {feedCount}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${
+                      feedOpen
+                        ? "border-[#C7A46A]/55 bg-[#C7A46A]/10 text-[#D2B783]"
+                        : "border-white/[0.12] text-ash"
+                    }`}
+                  >
+                    <motion.svg
+                      viewBox="0 0 16 16"
+                      width="11"
+                      height="11"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      animate={{ rotate: feedOpen ? 180 : 0 }}
+                      transition={{ duration: shouldReduceMotion ? 0 : 0.25 }}
+                    >
+                      <path d="m3 6 5 5 5-5" />
+                    </motion.svg>
+                  </span>
+                </span>
+              </span>
+
+              {/* Current message, wrapped onto up to two lines. Collapses when the list opens. */}
+              <motion.span
+                className="block overflow-hidden"
+                initial={false}
+                animate={
+                  feedOpen
+                    ? { height: 0, opacity: 0, marginTop: 0 }
+                    : { height: "auto", opacity: 1, marginTop: 10 }
+                }
+                transition={{
+                  duration: shouldReduceMotion ? 0 : 0.3,
+                  ease: "easeInOut",
+                }}
+              >
+                <span className="relative block min-h-[2.5rem]">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={logIndex}
+                      initial={shouldReduceMotion ? undefined : { opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={shouldReduceMotion ? undefined : { opacity: 0, y: -4 }}
+                      transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+                      className="type-mono line-clamp-2 block text-[0.62rem] leading-5 text-fog"
+                    >
+                      {DEVELOPMENT_LOGS[logIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
+              </motion.span>
+
+              {/* Fills over the time until the next message */}
+              {!feedOpen && !shouldReduceMotion && (
+                <motion.span
+                  key={`progress-${logIndex}`}
+                  aria-hidden="true"
+                  className="absolute inset-x-0 bottom-0 h-px origin-left bg-[#C7A46A]/70"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: FEED_INTERVAL_MS / 1000, ease: "linear" }}
+                />
+              )}
+            </button>
+
+            <AnimatePresence initial={false}>
+              {feedOpen && (
+                <motion.div
+                  key="feed-list"
+                  id="update-feed-list"
+                  initial={
+                    shouldReduceMotion
+                      ? { opacity: 1 }
+                      : { height: 0, opacity: 0 }
+                  }
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={
+                    shouldReduceMotion
+                      ? { opacity: 0 }
+                      : { height: 0, opacity: 0 }
+                  }
+                  transition={{
+                    duration: shouldReduceMotion ? 0 : 0.35,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="overflow-hidden"
+                >
+                  <ul className="border-t border-white/[0.06]">
+                    {DEVELOPMENT_LOGS.map((log, index) => {
+                      const current = index === logIndex;
+                      return (
+                        <motion.li
+                          key={log}
+                          initial={shouldReduceMotion ? undefined : { opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{
+                            duration: shouldReduceMotion ? 0 : 0.3,
+                            delay: shouldReduceMotion ? 0 : 0.08 + index * 0.05,
+                          }}
+                          className="border-b border-white/[0.05] last:border-b-0"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setLogIndex(index)}
+                            aria-current={current ? "true" : undefined}
+                            className={`relative flex w-full items-start gap-3 px-3 py-3 text-left transition-colors duration-300 active:bg-white/[0.045] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#C7A46A] ${
+                              current ? "bg-white/[0.03]" : ""
+                            }`}
+                          >
+                            <span
+                              aria-hidden="true"
+                              className={`pointer-events-none absolute bottom-2 left-0 top-2 w-px origin-center bg-[#C7A46A] transition-transform duration-300 ${
+                                current ? "scale-y-100" : "scale-y-0"
+                              }`}
+                            />
+                            <span
+                              className={`type-mono pt-0.5 text-[0.58rem] tabular-nums transition-colors duration-300 ${
+                                current ? "text-[#D2B783]" : "text-ash"
+                              }`}
+                            >
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+                            <span
+                              className={`type-mono min-w-0 flex-1 text-[0.62rem] leading-5 transition-colors duration-300 ${
+                                current ? "text-paper" : "text-fog"
+                              }`}
+                            >
+                              {log}
+                            </span>
+                          </button>
+                        </motion.li>
+                      );
+                    })}
+                  </ul>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
