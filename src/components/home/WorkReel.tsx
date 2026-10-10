@@ -10,6 +10,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import ProjectLink from "@/components/work/ProjectLink";
 import { projects, type Project } from "@/lib/projects";
 import { pad2 } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ interface PlateBodyProps {
 /**
  * One full-screen project plate: media edge to edge, quiet utility labels at
  * the top, a moderate title at the bottom. Shared by the pinned reel and the
- * reduced-motion list.
+ * reduced-motion list. Project links open the project with the page transition.
  */
 function PlateBody({ project, count, priority = false, imageScale }: PlateBodyProps) {
   return (
@@ -81,14 +82,22 @@ function PlateBody({ project, count, priority = false, imageScale }: PlateBodyPr
             </span>
           </p>
           <h3 className="type-display-wide size-lg">
-            <Link href={`/work/${project.slug}`}>{project.title}</Link>
+            <ProjectLink
+              href={`/work/${project.slug}`}
+              image={project.image}
+              focal={project.focal}
+            >
+              {project.title}
+            </ProjectLink>
           </h3>
-          <Link
+          <ProjectLink
             href={`/work/${project.slug}`}
+            image={project.image}
+            focal={project.focal}
             className="type-mono mt-5 inline-flex h-11 items-center gap-3 border-b border-current"
           >
             View project <span aria-hidden="true">→</span>
-          </Link>
+          </ProjectLink>
         </div>
 
         <p
