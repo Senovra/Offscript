@@ -3,121 +3,201 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-const PAGES = [
+/* --------------------------------------------------------------------------
+   DEVELOPMENT DASHBOARD DATA
+   Temporary client-facing tool. Remove once the full website is finished.
+
+   How the numbers work (so the client can trust them):
+   - Every page has a roadmap of tasks, each with its own percentage.
+   - A page's percentage is the average of its tasks.
+   - The overall percentage is the average of all eight pages.
+   - "waiting: true" marks a task that cannot be finished until Offscript
+     supplies content, media or approval.
+   Update the data below as the real work changes. Never mark a task complete
+   until it is built, integrated and checked.
+   -------------------------------------------------------------------------- */
+
+type PageState = "active" | "pending" | "finalising" | "completed";
+
+interface RoadmapItem {
+  name: string;
+  progress: number;
+  waiting?: boolean;
+}
+
+interface RawPage {
+  number: string;
+  name: string;
+  description: string;
+  status: string;
+  state: PageState;
+  previewLabel: string;
+  preview: RoadmapItem[];
+}
+
+/** The page the team is working on next. Change when the real priority changes. */
+const FOCUS = "03 Services (Interactive Layout & Animations)";
+
+const RAW_PAGES: RawPage[] = [
   {
     number: "01",
     name: "Home",
-    description: "Developing the cinematic homepage experience.",
+    description:
+      "Cinematic intro, hero, camera scene and scrolling sections built; awaiting final media.",
     status: "In active development",
     state: "active",
-    progress: 93,
-    preview: [
-      { name: "Arrival", progress: 100 },
-      { name: "Identity", progress: 100 },
-      { name: "Viewfinder", progress: 100 },
-      { name: "Lens Lock → Iris transition", progress: 100 },
-      { name: "Work Reel", progress: 100 },
-      { name: "Capability", progress: 100 },
-      { name: "Footer", progress: 50 },
-    ],
     previewLabel: "Homepage chapters",
+    preview: [
+      { name: "Intro Loader", progress: 100 },
+      { name: "OFFSCRIPT Footage Mask", progress: 100 },
+      { name: "Final Hero Footage (Offscript)", progress: 30, waiting: true },
+      { name: "Viewfinder Frame & Camera HUD", progress: 90 },
+      { name: "3D Camera Scene (Scroll Orbit)", progress: 100 },
+      { name: "Work Reel Layout", progress: 100 },
+      { name: "Capabilities Scroll Stage", progress: 100 },
+      { name: "About Teaser", progress: 50, waiting: true },
+      { name: "Start-a-Project Band", progress: 100 },
+      { name: "Footer & Social Links", progress: 70, waiting: true },
+    ],
   },
   {
     number: "02",
     name: "About",
-    description: "Layouts and interactive components implemented; awaiting final copy.",
+    description:
+      "Interactive discipline clock built; awaiting Offscript's story and photography.",
     status: "Awaiting content",
     state: "pending",
-    progress: 85,
-    preview: [
-      { name: "Page Structure & Grid Architecture", progress: 100 },
-      { name: "Agency Story & Section Layouts", progress: 100 },
-      { name: "Client & Collaboration Modules", progress: 100 },
-      { name: "360° Perspective Interactive Component", progress: 100 },
-      { name: "Approved Content Integration (Offscript)", progress: 25 },
-    ],
     previewLabel: "Development roadmap",
+    preview: [
+      { name: "Page Structure & Header", progress: 100 },
+      { name: "360° Discipline Clock (Scroll Dial)", progress: 100 },
+      { name: "Story Section Layout", progress: 70 },
+      { name: "Team & Studio Photography (Offscript)", progress: 10, waiting: true },
+      { name: "Approved Copy Integration (Offscript)", progress: 0, waiting: true },
+    ],
   },
   {
     number: "03",
     name: "Services",
-    description: "Core service architecture built; layout refinements underway.",
+    description: "Service structure in place; interactive layout and animations are next.",
     status: "Design in progress",
     state: "active",
-    progress: 80,
-    preview: [
-      { name: "Service Capability Data Structures", progress: 100 },
-      { name: "Interactive Service Grid & Hover States", progress: 100 },
-      { name: "Sub-service Detail Expansion UI", progress: 100 },
-      { name: "Layout Refinements & Spatial Rhythm", progress: 60 },
-      { name: "Micro-interactions & Visual Polish", progress: 40 },
-    ],
     previewLabel: "Development roadmap",
+    preview: [
+      { name: "Service Names & Order", progress: 100 },
+      { name: "Page Structure & Numbered List", progress: 100 },
+      { name: "Interactive Layout & Animations", progress: 20 },
+      { name: "Service Descriptions (Offscript)", progress: 0, waiting: true },
+      { name: "Service Photography (Offscript)", progress: 0, waiting: true },
+    ],
   },
   {
     number: "04",
     name: "Work",
     description:
-      "Refining full-screen project presentations and custom transitions.",
+      "Portfolio and project pages built; cinematic transitions and rich content underway.",
     status: "Design in progress",
     state: "active",
-    progress: 65,
-    preview: [
-      { name: "Portfolio Listing & Grid Architecture", progress: 100 },
-      { name: "Full-Screen Project Detail Views", progress: 50 },
-      { name: "Cinematic Transitions & Scroll Animations", progress: 45 },
-    ],
     previewLabel: "Development roadmap",
+    preview: [
+      { name: "Portfolio Listing Page", progress: 100 },
+      { name: "Project Detail Pages", progress: 80 },
+      { name: "Cinematic Transitions & Scroll Animations", progress: 40 },
+      { name: "Rich Project Content (Photos, Video, Text)", progress: 0 },
+      { name: "Real Projects & Media (Offscript)", progress: 0, waiting: true },
+    ],
   },
   {
     number: "05",
     name: "Contact",
-    description: "Completing the final refinements.",
-    status: "Finalising",
-    state: "finalising",
-    progress: 90,
+    description: "Enquiry form built; awaiting Offscript's contact details.",
+    status: "Awaiting details",
+    state: "pending",
+    previewLabel: "Development roadmap",
+    preview: [
+      { name: "Page Layout & Details Column", progress: 100 },
+      { name: "Enquiry Form & Interest Tags", progress: 100 },
+      { name: "Email Hand-off (Opens Visitor's Email App)", progress: 80 },
+      { name: "Contact Details (Offscript)", progress: 0, waiting: true },
+    ],
   },
   {
     number: "06",
     name: "Privacy Policy",
-    description: "Awaiting approved policy content from Offscript.",
-    status: "Awaiting content",
+    description: "Draft written; awaiting company details and legal review.",
+    status: "Awaiting details",
     state: "pending",
-    progress: 10,
+    previewLabel: "Development roadmap",
+    preview: [
+      { name: "Page Layout & Structure", progress: 100 },
+      { name: "Draft Policy Sections", progress: 80 },
+      { name: "Company Details (Offscript)", progress: 0, waiting: true },
+      { name: "Legal Review & Approval (Offscript)", progress: 0, waiting: true },
+    ],
   },
   {
     number: "07",
     name: "Terms & Conditions",
-    description: "Awaiting approved terms from Offscript.",
-    status: "Awaiting content",
+    description: "Draft written; awaiting company details and legal review.",
+    status: "Awaiting details",
     state: "pending",
-    progress: 10,
+    previewLabel: "Development roadmap",
+    preview: [
+      { name: "Page Layout & Structure", progress: 100 },
+      { name: "Draft Terms Sections", progress: 80 },
+      { name: "Company Details (Offscript)", progress: 0, waiting: true },
+      { name: "Legal Review & Approval (Offscript)", progress: 0, waiting: true },
+    ],
   },
   {
     number: "08",
     name: "Credits",
-    description: "Credits page completed.",
-    status: "Completed",
-    state: "completed",
-    progress: 100,
+    description: "Third-party credits in place; final check once real media replaces stock.",
+    status: "Finalising",
+    state: "finalising",
+    previewLabel: "Development roadmap",
+    preview: [
+      { name: "Page Layout", progress: 100 },
+      { name: "3D Model Attribution", progress: 100 },
+      { name: "Stock Photography Notice", progress: 100 },
+      { name: "Final Check After Real Media", progress: 0, waiting: true },
+    ],
   },
-] as const;
+];
 
+/** Each page's percentage is the average of its roadmap tasks. */
+const PAGES = RAW_PAGES.map((page) => ({
+  ...page,
+  progress: Math.round(
+    page.preview.reduce((total, item) => total + item.progress, 0) /
+      page.preview.length,
+  ),
+}));
+
+/** The overall percentage is the average of all eight pages. */
+const GLOBAL_PROGRESS = Math.round(
+  PAGES.reduce((total, page) => total + page.progress, 0) / PAGES.length,
+);
+
+const ALL_ITEMS = PAGES.flatMap((page) => page.preview);
+const TOTAL_TASKS = ALL_ITEMS.length;
+const COMPLETE_TASKS = ALL_ITEMS.filter((item) => item.progress === 100).length;
+const WAITING_TASKS = ALL_ITEMS.filter(
+  (item) => item.waiting && item.progress < 100,
+).length;
+
+/** Update messages shown in the feed. Written by hand; not a live build log. */
 const DEVELOPMENT_LOGS = [
-  "Refining Framer Motion spring physics on Services grid...",
-  "Structural layout complete — pending Offscript content assets.",
-  "Optimizing cinematic Iris transition performance...",
-  "Core architecture build on track — waiting on asset handover.",
+  "Homepage intro, camera scene and viewfinder frame built — final review pending.",
+  "Layouts are complete with placeholder media — awaiting Offscript's photography and video.",
+  "Services page: interactive layout and animations are the next focus.",
+  "Enquiry form prepares a ready-to-send email — contact details awaited from Offscript.",
+  "Privacy and Terms drafted — awaiting company details and legal review.",
 ];
 
 const TIME_ZONE = "Asia/Colombo";
 
-type PageState = (typeof PAGES)[number]["state"];
-
-const STATUS_STYLES: Record<
-  PageState,
-  { text: string; dot: string }
-> = {
+const STATUS_STYLES: Record<PageState, { text: string; dot: string }> = {
   active: {
     text: "text-[#D2B783]",
     dot: "bg-[#C7A46A]",
@@ -146,20 +226,7 @@ export default function Maintenance() {
 
   const statusPanelRef = useRef<HTMLDivElement>(null);
   const year = new Date().getFullYear();
-  // Calculate global progress from all roadmap sub-items
-  const allPreviewItems = PAGES.flatMap((page) =>
-    "preview" in page ? [...page.preview] : [],
-  );
 
-  const totalSubItemProgress = allPreviewItems.reduce(
-    (total, item) => total + item.progress,
-    0,
-  );
-
-  const globalProgress =
-    allPreviewItems.length > 0
-      ? Math.round(totalSubItemProgress / allPreviewItems.length)
-      : 0;
   useEffect(() => {
     const updateClock = () => {
       setLocalTime(
@@ -282,7 +349,7 @@ export default function Maintenance() {
             Offscript
           </p>
           <span className="type-mono rounded-full border border-[#C7A46A]/30 bg-[#C7A46A]/10 px-2.5 py-0.5 text-[0.6rem] text-[#D2B783]">
-            {globalProgress}% COMPLETE
+            {GLOBAL_PROGRESS}% COMPLETE
           </span>
         </div>
 
@@ -454,7 +521,7 @@ export default function Maintenance() {
             <div className="type-mono inline-flex items-center gap-2 rounded-lg border border-[#C7A46A]/25 bg-[#C7A46A]/5 px-3 py-1 text-[0.6rem] text-fog">
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#C7A46A]" />
               <span className="text-ash">NEXT FOCUS:</span>
-              <span className="text-[#D2B783]">03 Services (Layout Fixes & Animations)</span>
+              <span className="text-[#D2B783]">{FOCUS}</span>
             </div>
           </div>
 
@@ -495,7 +562,7 @@ export default function Maintenance() {
             />
 
             {PAGES.map((page, index) => {
-              const hasPreview = "preview" in page;
+              const hasPreview = page.preview.length > 0;
               const isExpanded = expandedPage === page.name;
               const statusStyle = STATUS_STYLES[page.state];
 
@@ -633,7 +700,7 @@ export default function Maintenance() {
 
                             <div
                               className={`grid gap-2 ${
-                                page.name === "Home" || page.name === "Services" || page.name === "About"
+                                page.preview.length >= 4
                                   ? "sm:grid-cols-2"
                                   : "grid-cols-1"
                               }`}
@@ -641,6 +708,8 @@ export default function Maintenance() {
                               {page.preview.map((item, previewIndex) => {
                                 const itemProgress = item.progress;
                                 const isFullyComplete = itemProgress === 100;
+                                const isWaiting =
+                                  Boolean(item.waiting) && !isFullyComplete;
 
                                 // SVG Circle Circumference for radius r=8 is ~50.26
                                 const circumference = 50.26;
@@ -716,6 +785,11 @@ export default function Maintenance() {
 
                                     <span className="type-body min-w-0 flex-1 text-xs leading-5 text-fog sm:text-sm">
                                       {item.name}
+                                      {isWaiting && (
+                                        <span className="type-mono mt-0.5 block text-[0.52rem] tracking-[0.1em] text-[#C7A46A]/75">
+                                          AWAITING OFFSCRIPT
+                                        </span>
+                                      )}
                                     </span>
 
                                     <span className="type-mono text-[0.55rem] text-ash/80">
@@ -745,7 +819,15 @@ export default function Maintenance() {
             })}
           </div>
 
-          <p className="type-body mt-4 w-full text-balance text-xs leading-6 text-ash sm:text-sm">
+          <p className="type-mono mt-4 text-[0.6rem] tracking-[0.08em] text-ash sm:text-[0.65rem]">
+            {COMPLETE_TASKS} OF {TOTAL_TASKS} TASKS COMPLETE
+            <span aria-hidden="true" className="mx-2 text-[#C7A46A]/60">
+              ·
+            </span>
+            {WAITING_TASKS} AWAITING OFFSCRIPT
+          </p>
+
+          <p className="type-body mt-3 w-full text-balance text-xs leading-6 text-ash sm:text-sm">
             Further refinements, content integration and final checks will continue as the website progresses towards launch.
           </p>
         </motion.section>
