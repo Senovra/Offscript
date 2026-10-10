@@ -10,55 +10,64 @@ const PAGES = [
     description: "Developing the cinematic homepage experience.",
     status: "In active development",
     state: "active",
+    progress: 93,
     preview: [
-      "Arrival",
-      "Identity",
-      "Viewfinder",
-      "Lens Lock → Iris transition",
-      "Work Reel",
-      "Capability",
-      "360° / About",
-      "Footer",
+      { name: "Arrival", progress: 100 },
+      { name: "Identity", progress: 100 },
+      { name: "Viewfinder", progress: 100 },
+      { name: "Lens Lock → Iris transition", progress: 100 },
+      { name: "Work Reel", progress: 100 },
+      { name: "Capability", progress: 100 },
+      { name: "Footer", progress: 50 },
     ],
     previewLabel: "Homepage chapters",
   },
   {
     number: "02",
     name: "About",
-    description: "Awaiting content from Offscript.",
+    description: "Layouts and interactive components implemented; awaiting final copy.",
     status: "Awaiting content",
     state: "pending",
-    preview: ["Who We Are", "How We Work", "Who We Work With"],
-    previewLabel: "Three-part introduction",
+    progress: 85,
+    preview: [
+      { name: "Page Structure & Grid Architecture", progress: 100 },
+      { name: "Agency Story & Section Layouts", progress: 100 },
+      { name: "Client & Collaboration Modules", progress: 100 },
+      { name: "360° Perspective Interactive Component", progress: 100 },
+      { name: "Approved Content Integration (Offscript)", progress: 25 },
+    ],
+    previewLabel: "Development roadmap",
   },
   {
     number: "03",
     name: "Services",
-    description: "Layouts and animations are still underway.",
+    description: "Core service architecture built; layout refinements underway.",
     status: "Design in progress",
     state: "active",
+    progress: 80,
     preview: [
-      "Strategy",
-      "Design",
-      "Content Creation",
-      "Performance Marketing",
-      "Social Media",
-      "Immersive Experience",
+      { name: "Service Capability Data Structures", progress: 100 },
+      { name: "Interactive Service Grid & Hover States", progress: 100 },
+      { name: "Sub-service Detail Expansion UI", progress: 100 },
+      { name: "Layout Refinements & Spatial Rhythm", progress: 60 },
+      { name: "Micro-interactions & Visual Polish", progress: 40 },
     ],
-    previewLabel: "Service capabilities",
+    previewLabel: "Development roadmap",
   },
   {
     number: "04",
     name: "Work",
-    description: "Refining the work presentation and full-screen project experiences.",
+    description:
+      "Refining full-screen project presentations and custom transitions.",
     status: "Design in progress",
     state: "active",
+    progress: 65,
     preview: [
-      "Work sections",
-      "Individual full-screen project experiences",
-      "Animations and visual design",
+      { name: "Portfolio Listing & Grid Architecture", progress: 100 },
+      { name: "Full-Screen Project Detail Views", progress: 50 },
+      { name: "Cinematic Transitions & Scroll Animations", progress: 45 },
     ],
-    previewLabel: "Portfolio experience",
+    previewLabel: "Development roadmap",
   },
   {
     number: "05",
@@ -66,6 +75,7 @@ const PAGES = [
     description: "Completing the final refinements.",
     status: "Finalising",
     state: "finalising",
+    progress: 90,
   },
   {
     number: "06",
@@ -73,6 +83,7 @@ const PAGES = [
     description: "Awaiting approved policy content from Offscript.",
     status: "Awaiting content",
     state: "pending",
+    progress: 10,
   },
   {
     number: "07",
@@ -80,6 +91,7 @@ const PAGES = [
     description: "Awaiting approved terms from Offscript.",
     status: "Awaiting content",
     state: "pending",
+    progress: 10,
   },
   {
     number: "08",
@@ -87,22 +99,67 @@ const PAGES = [
     description: "Credits page completed.",
     status: "Completed",
     state: "completed",
+    progress: 100,
   },
 ] as const;
 
+const DEVELOPMENT_LOGS = [
+  "Refining Framer Motion spring physics on Services grid...",
+  "Structural layout complete — pending Offscript content assets.",
+  "Optimizing cinematic Iris transition performance...",
+  "Core architecture build on track — waiting on asset handover.",
+];
+
 const TIME_ZONE = "Asia/Colombo";
+
+type PageState = (typeof PAGES)[number]["state"];
+
+const STATUS_STYLES: Record<
+  PageState,
+  { text: string; dot: string }
+> = {
+  active: {
+    text: "text-[#D2B783]",
+    dot: "bg-[#C7A46A]",
+  },
+  pending: {
+    text: "text-[#B7B0A2]",
+    dot: "bg-[#A7A095]",
+  },
+  finalising: {
+    text: "text-[#A6C2AC]",
+    dot: "bg-[#91B69A]",
+  },
+  completed: {
+    text: "text-[#A6C2AC]",
+    dot: "bg-[#91B69A]",
+  },
+};
 
 export default function Maintenance() {
   const reduceMotion = useReducedMotion();
   const shouldReduceMotion = reduceMotion ?? false;
 
   const [localTime, setLocalTime] = useState("");
-  const [hoveredPage, setHoveredPage] = useState<string | null>(null);
   const [expandedPage, setExpandedPage] = useState<string | null>(null);
+  const [logIndex, setLogIndex] = useState(0);
 
   const statusPanelRef = useRef<HTMLDivElement>(null);
   const year = new Date().getFullYear();
+  // Calculate global progress from all roadmap sub-items
+  const allPreviewItems = PAGES.flatMap((page) =>
+    "preview" in page ? [...page.preview] : [],
+  );
 
+  const totalSubItemProgress = allPreviewItems.reduce(
+    (total, item) => total + item.progress,
+    0,
+  );
+
+  const globalProgress =
+    allPreviewItems.length > 0
+      ? Math.round(totalSubItemProgress / allPreviewItems.length)
+      : 0;
   useEffect(() => {
     const updateClock = () => {
       setLocalTime(
@@ -117,15 +174,20 @@ export default function Maintenance() {
     };
 
     updateClock();
-
     const interval = window.setInterval(updateClock, 1000);
 
-    return () => window.clearInterval(interval);
+    // Rotate development update messages every 4 seconds
+    const logInterval = window.setInterval(() => {
+      setLogIndex((prev) => (prev + 1) % DEVELOPMENT_LOGS.length);
+    }, 4000);
+
+    return () => {
+      window.clearInterval(interval);
+      window.clearInterval(logInterval);
+    };
   }, []);
 
-  const handlePointerMove = (
-    event: PointerEvent<HTMLDivElement>,
-  ) => {
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     if (
       shouldReduceMotion ||
       event.pointerType !== "mouse" ||
@@ -135,7 +197,6 @@ export default function Maintenance() {
     }
 
     const rect = statusPanelRef.current.getBoundingClientRect();
-
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
@@ -144,10 +205,8 @@ export default function Maintenance() {
   };
 
   const resetPointerLight = () => {
-    if (statusPanelRef.current) {
-      statusPanelRef.current.style.setProperty("--pointer-x", "50%");
-      statusPanelRef.current.style.setProperty("--pointer-y", "0%");
-    }
+    statusPanelRef.current?.style.setProperty("--pointer-x", "50%");
+    statusPanelRef.current?.style.setProperty("--pointer-y", "0%");
   };
 
   const togglePreview = (pageName: string) => {
@@ -218,9 +277,14 @@ export default function Maintenance() {
         transition={{ duration: 0.65, ease: "easeOut" }}
         className="relative z-10 flex items-center justify-between gap-4 border-b border-[var(--line)] pb-5 md:pb-6"
       >
-        <p className="type-display-wide text-base uppercase tracking-[0.16em] md:text-lg">
-          Offscript
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="type-display-wide text-base uppercase tracking-[0.16em] md:text-lg">
+            Offscript
+          </p>
+          <span className="type-mono rounded-full border border-[#C7A46A]/30 bg-[#C7A46A]/10 px-2.5 py-0.5 text-[0.6rem] text-[#D2B783]">
+            {globalProgress}% COMPLETE
+          </span>
+        </div>
 
         <div className="flex flex-col items-end gap-1.5">
           <div className="type-mono flex items-center gap-2.5 text-[0.6rem] text-fog sm:text-xs">
@@ -240,10 +304,7 @@ export default function Maintenance() {
                   }}
                 />
               )}
-              <span
-                aria-hidden="true"
-                className="relative h-1.5 w-1.5 rounded-full bg-[#C7A46A]"
-              />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-[#C7A46A]" />
             </span>
             <span>DEVELOPMENT IN PROGRESS</span>
           </div>
@@ -350,42 +411,68 @@ export default function Maintenance() {
             </span>
           </div>
 
-          {/* Animated development progress indicator */}
-          <div
-            className="mb-5 flex items-center gap-3"
-            role="status"
-            aria-label="Website development is actively progressing"
-          >
-            <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.12em] text-ash sm:text-[0.65rem]">
-              BUILD STATUS
-            </span>
-
+          {/* Overall activity indicator & Spotlight badge */}
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div
-              aria-hidden="true"
-              className="relative h-px min-w-0 flex-1 overflow-hidden bg-white/[0.10]"
+              className="flex items-center gap-3 flex-1"
+              role="status"
+              aria-label="Website development is actively progressing"
             >
-              <motion.div
-                className="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-transparent via-[#C7A46A]/90 to-[#E6D0A6]"
-                initial={{ x: "-100%" }}
-                animate={
-                  shouldReduceMotion ? { x: "0%" } : { x: ["-100%", "250%"] }
-                }
-                transition={
-                  shouldReduceMotion
-                    ? { duration: 0 }
-                    : {
-                        duration: 3.2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        repeatDelay: 0.35,
-                      }
-                }
-              />
+              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.12em] text-ash sm:text-[0.65rem]">
+                BUILD STATUS
+              </span>
+
+              <div
+                aria-hidden="true"
+                className="relative h-px min-w-0 flex-1 overflow-hidden bg-white/[0.10]"
+              >
+                <motion.div
+                  className="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-transparent via-[#C7A46A]/90 to-[#E6D0A6]"
+                  initial={{ x: "-100%" }}
+                  animate={
+                    shouldReduceMotion ? { x: "0%" } : { x: ["-100%", "250%"] }
+                  }
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : {
+                          duration: 3.2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          repeatDelay: 0.35,
+                        }
+                  }
+                />
+              </div>
+
+              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.1em] text-[#D2B783] sm:text-[0.65rem]">
+                ACTIVE
+              </span>
             </div>
 
-            <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.1em] text-[#D2B783] sm:text-[0.65rem]">
-              ACTIVE
-            </span>
+            {/* Next Up / Current Focus Spotlight Badge */}
+            <div className="type-mono inline-flex items-center gap-2 rounded-lg border border-[#C7A46A]/25 bg-[#C7A46A]/5 px-3 py-1 text-[0.6rem] text-fog">
+              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#C7A46A]" />
+              <span className="text-ash">NEXT FOCUS:</span>
+              <span className="text-[#D2B783]">03 Services (Layout Fixes & Animations)</span>
+            </div>
+          </div>
+
+          {/* Development Update Feed Ticker */}
+          <div className="mb-5 flex items-center gap-2.5 rounded-md border border-white/[0.06] bg-black/40 px-3 py-2 text-[0.62rem]">
+            <span className="type-mono text-[#C7A46A] shrink-0 font-semibold">[DEVELOPMENT UPDATE FEED]</span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={logIndex}
+                initial={{ opacity: 0, y: 3 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -3 }}
+                transition={{ duration: 0.3 }}
+                className="type-mono text-fog truncate"
+              >
+                {DEVELOPMENT_LOGS[logIndex]}
+              </motion.span>
+            </AnimatePresence>
           </div>
 
           {/* Interactive glass panel */}
@@ -409,25 +496,8 @@ export default function Maintenance() {
 
             {PAGES.map((page, index) => {
               const hasPreview = "preview" in page;
-              const isHovered = hoveredPage === page.name;
               const isExpanded = expandedPage === page.name;
-              const showPreview = hasPreview && (isHovered || isExpanded);
-
-              const statusColor =
-                page.state === "finalising"
-                  ? "text-[#A6C2AC]"
-                  : page.state === "completed"
-                    ? "text-[#A6C2AC]"
-                    : page.state === "pending"
-                      ? "text-[#B7B0A2]"
-                      : "text-[#D2B783]";
-
-              const dotColor =
-                page.state === "finalising" || page.state === "completed"
-                  ? "bg-[#91B69A]"
-                  : page.state === "pending"
-                    ? "bg-[#A7A095]"
-                    : "bg-[#C7A46A]";
+              const statusStyle = STATUS_STYLES[page.state];
 
               return (
                 <motion.div
@@ -438,74 +508,100 @@ export default function Maintenance() {
                     duration: 0.45,
                     delay: shouldReduceMotion ? 0 : 0.4 + index * 0.07,
                   }}
-                  onHoverStart={() => {
-                    if (hasPreview) setHoveredPage(page.name);
-                  }}
-                  onHoverEnd={() => {
-                    if (hasPreview) setHoveredPage(null);
-                  }}
-                  className={`group/row relative border-b border-white/[0.075] last:border-b-0 transition-colors duration-300 ${
-                    showPreview ? "bg-white/[0.025]" : "hover:bg-white/[0.02]"
+                  className={`group/row relative border-b border-white/[0.075] last:border-b-0 ${
+                    isExpanded ? "bg-white/[0.035]" : ""
                   }`}
                 >
-                  <div className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 px-4 py-4 sm:grid-cols-[2.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-x-5 sm:px-5 sm:py-5">
-                    <span className="type-mono pt-1 text-xs text-ash transition-transform duration-300 group-hover/row:translate-x-0.5 group-hover/row:text-[#C7A46A]">
-                      {page.number}
-                    </span>
-
-                    <div className="min-w-0">
-                      <h3 className="type-display-wide text-base transition-colors duration-300 group-hover/row:text-white sm:text-lg">
-                        {page.name}
-                      </h3>
-                      <p className="type-body mt-1 text-xs leading-5 text-fog sm:text-sm">
-                        {page.description}
-                      </p>
-                    </div>
-
-                    <div className="col-start-2 mt-3 flex items-center gap-2 sm:col-start-auto sm:mt-0 sm:justify-self-end">
-                      <span
-                        aria-hidden="true"
-                        className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`}
-                      />
-                      <span
-                        className={`type-mono text-[0.65rem] sm:text-xs ${statusColor}`}
-                      >
-                        {page.status}
+                  {/* The entire chapter header is one accessible button */}
+                  <button
+                    type="button"
+                    onClick={() => hasPreview && togglePreview(page.name)}
+                    aria-expanded={hasPreview ? isExpanded : undefined}
+                    aria-controls={hasPreview ? `preview-${page.number}` : undefined}
+                    aria-label={
+                      hasPreview
+                        ? `${isExpanded ? "Collapse" : "Expand"} ${page.name} chapter details`
+                        : `${page.name}: ${page.status} (${page.progress}%)`
+                    }
+                    className={`block w-full text-left transition-colors duration-300 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#C7A46A] ${
+                      hasPreview
+                        ? "cursor-pointer hover:bg-white/[0.025] active:bg-white/[0.045]"
+                        : "cursor-default"
+                    }`}
+                  >
+                    <div className="grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-x-3 px-4 py-4 sm:grid-cols-[2.5rem_minmax(0,1fr)_auto_auto] sm:items-center sm:gap-x-5 sm:px-5 sm:py-5">
+                      <span className="type-mono col-start-1 row-start-1 pt-0.5 text-xs text-ash transition-colors duration-300 group-hover/row:text-[#C7A46A]">
+                        {page.number}
                       </span>
 
-                      {hasPreview && (
-                        <button
-                          type="button"
-                          aria-label={`${isExpanded ? "Hide" : "Show"} ${page.name} details`}
-                          aria-expanded={Boolean(showPreview)}
-                          onClick={() => togglePreview(page.name)}
-                          className="ml-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/[0.10] text-ash transition-colors hover:border-[#C7A46A]/50 hover:text-[#D2B783] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#C7A46A] sm:hidden"
-                        >
-                          <motion.svg
+                      <div className="col-start-2 row-start-1 min-w-0">
+                        <h3 className="type-display-wide text-base text-paper transition-colors duration-300 group-hover/row:text-white sm:text-lg">
+                          {page.name}
+                        </h3>
+
+                        <p className="type-body mt-1 text-xs leading-5 text-fog sm:text-sm">
+                          {page.description}
+                        </p>
+                      </div>
+
+                      {/* Status label with percentage badge */}
+                      <div className="col-start-2 row-start-2 mt-3 flex min-w-0 items-center gap-3 sm:col-start-3 sm:row-start-1 sm:mt-0 sm:justify-self-end">
+                        <div className="flex items-center gap-2">
+                          <span
                             aria-hidden="true"
+                            className={`h-1.5 w-1.5 shrink-0 rounded-full ${statusStyle.dot}`}
+                          />
+                          <span
+                            className={`type-mono text-[0.62rem] leading-5 sm:text-xs ${statusStyle.text}`}
+                          >
+                            {page.status}
+                          </span>
+                        </div>
+
+                        <span className="type-mono rounded border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 text-[0.58rem] tabular-nums text-ash sm:text-[0.65rem]">
+                          {page.progress}%
+                        </span>
+                      </div>
+
+                      {/* Arrow stays visible as a visual hint */}
+                      <span
+                        aria-hidden="true"
+                        className={`col-start-3 row-start-1 flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-full border transition-all duration-300 sm:col-start-4 ${
+                          hasPreview
+                            ? isExpanded
+                              ? "border-[#C7A46A]/55 bg-[#C7A46A]/10 text-[#D2B783]"
+                              : "border-white/[0.12] text-ash group-hover/row:border-[#C7A46A]/50 group-hover/row:text-[#D2B783]"
+                            : "border-transparent text-transparent"
+                        }`}
+                      >
+                        {hasPreview && (
+                          <motion.svg
                             viewBox="0 0 16 16"
-                            width="12"
-                            height="12"
+                            width="13"
+                            height="13"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="1.4"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             animate={{ rotate: isExpanded ? 180 : 0 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{
+                              duration: shouldReduceMotion ? 0 : 0.22,
+                            }}
                           >
                             <path d="m3 6 5 5 5-5" />
                           </motion.svg>
-                        </button>
-                      )}
+                        )}
+                      </span>
                     </div>
-                  </div>
+                  </button>
 
-                  {/* Section preview: hover on desktop, tap on touch devices */}
+                  {/* Preview opens by tapping the whole card on every device */}
                   {hasPreview && (
                     <AnimatePresence initial={false}>
-                      {showPreview && (
+                      {isExpanded && (
                         <motion.div
+                          id={`preview-${page.number}`}
                           key={`${page.name}-preview`}
                           initial={
                             shouldReduceMotion
@@ -524,50 +620,110 @@ export default function Maintenance() {
                           }}
                           className="overflow-hidden"
                         >
-                          <div className="mx-4 mb-4 rounded-lg border border-[#C7A46A]/15 bg-black/20 px-4 py-4 sm:mx-5 sm:mb-5 sm:px-5">
-                            <div className="mb-3 flex items-center justify-between gap-3">
+                          <div className="mx-3 mb-4 rounded-lg border border-[#C7A46A]/20 bg-black/25 p-4 sm:mx-5 sm:mb-5 sm:p-5">
+                            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                               <p className="type-mono text-[0.58rem] tracking-[0.13em] text-[#C7A46A] sm:text-[0.65rem]">
                                 {page.previewLabel}
                               </p>
                               <span className="type-mono text-[0.55rem] text-ash">
-                                {page.preview.length.toString().padStart(2, "0")}{" "}
+                                {String(page.preview.length).padStart(2, "0")}{" "}
                                 ITEMS
                               </span>
                             </div>
 
                             <div
-                              className={`grid gap-x-6 gap-y-2 ${
-                                page.name === "Home" || page.name === "Services"
+                              className={`grid gap-2 ${
+                                page.name === "Home" || page.name === "Services" || page.name === "About"
                                   ? "sm:grid-cols-2"
                                   : "grid-cols-1"
                               }`}
                             >
-                              {page.preview.map((item, previewIndex) => (
-                                <motion.div
-                                  key={item}
-                                  initial={
-                                    shouldReduceMotion
-                                      ? undefined
-                                      : { opacity: 0, x: -5 }
-                                  }
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{
-                                    duration: 0.2,
-                                    delay: shouldReduceMotion
-                                      ? 0
-                                      : previewIndex * 0.025,
-                                  }}
-                                  className="flex min-w-0 items-start gap-2.5"
-                                >
-                                  <span
-                                    aria-hidden="true"
-                                    className="mt-[0.48rem] h-1 w-1 shrink-0 rounded-full bg-[#C7A46A]/80"
-                                  />
-                                  <span className="type-body text-xs leading-5 text-fog sm:text-sm">
-                                    {item}
-                                  </span>
-                                </motion.div>
-                              ))}
+                              {page.preview.map((item, previewIndex) => {
+                                const itemProgress = item.progress;
+                                const isFullyComplete = itemProgress === 100;
+
+                                // SVG Circle Circumference for radius r=8 is ~50.26
+                                const circumference = 50.26;
+                                const strokeDashoffset =
+                                  circumference - (itemProgress / 100) * circumference;
+
+                                return (
+                                  <motion.div
+                                    key={item.name}
+                                    initial={
+                                      shouldReduceMotion
+                                        ? undefined
+                                        : { opacity: 0, y: 5 }
+                                    }
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                      duration: shouldReduceMotion ? 0 : 0.2,
+                                      delay: shouldReduceMotion
+                                        ? 0
+                                        : previewIndex * 0.025,
+                                    }}
+                                    className="flex min-w-0 items-center gap-3 rounded-md border border-white/[0.055] bg-white/[0.025] px-3 py-3 transition-colors duration-200 hover:border-[#C7A46A]/20 hover:bg-white/[0.045]"
+                                  >
+                                    {/* Circular Progress Indicator Ring */}
+                                    <div className="relative flex h-4 w-4 shrink-0 items-center justify-center">
+                                      <svg
+                                        viewBox="0 0 20 20"
+                                        className="h-full w-full -rotate-90 transform"
+                                      >
+                                        <circle
+                                          cx="10"
+                                          cy="10"
+                                          r="8"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          className="text-white/10"
+                                        />
+                                        <motion.circle
+                                          cx="10"
+                                          cy="10"
+                                          r="8"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeDasharray={circumference}
+                                          initial={{
+                                            strokeDashoffset: circumference,
+                                          }}
+                                          animate={{ strokeDashoffset }}
+                                          transition={{
+                                            duration: shouldReduceMotion ? 0 : 0.6,
+                                            ease: "easeOut",
+                                          }}
+                                          className={
+                                            isFullyComplete
+                                              ? "text-[#C7A46A]"
+                                              : "text-[#C7A46A]/60"
+                                          }
+                                        />
+                                      </svg>
+                                      {isFullyComplete && (
+                                        <span className="absolute h-1.5 w-1.5 rounded-full bg-[#C7A46A]" />
+                                      )}
+                                    </div>
+
+                                    <span
+                                      aria-hidden="true"
+                                      className="type-mono text-[0.6rem] text-[#C7A46A]/80"
+                                    >
+                                      {String(previewIndex + 1).padStart(2, "0")}
+                                    </span>
+
+                                    <span className="type-body min-w-0 flex-1 text-xs leading-5 text-fog sm:text-sm">
+                                      {item.name}
+                                    </span>
+
+                                    <span className="type-mono text-[0.55rem] text-ash/80">
+                                      {itemProgress}%
+                                    </span>
+                                  </motion.div>
+                                );
+                              })}
                             </div>
                           </div>
                         </motion.div>
@@ -575,11 +731,11 @@ export default function Maintenance() {
                     </AnimatePresence>
                   )}
 
-                  {/* Subtle amber hover accent */}
+                  {/* Subtle amber edge accent */}
                   <span
                     aria-hidden="true"
                     className={`pointer-events-none absolute bottom-3 left-0 top-3 w-px origin-center bg-[#C7A46A]/80 transition-transform duration-300 ${
-                      showPreview
+                      isExpanded
                         ? "scale-y-100"
                         : "scale-y-0 group-hover/row:scale-y-100"
                     }`}
@@ -589,9 +745,8 @@ export default function Maintenance() {
             })}
           </div>
 
-          <p className="type-body mt-4 text-xs leading-6 text-ash sm:text-sm">
-            Further refinements, content integration and final checks will
-            continue as the website progresses towards launch.
+          <p className="type-body mt-4 w-full text-balance text-xs leading-6 text-ash sm:text-sm">
+            Further refinements, content integration and final checks will continue as the website progresses towards launch.
           </p>
         </motion.section>
       </div>
