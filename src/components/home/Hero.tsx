@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -8,8 +8,9 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import OffscriptMask from "./OffscriptMask";
+import OffscriptMask, { type WordmarkBounds } from "./OffscriptMask";
 import HeroMedia from "./HeroMedia";
+import HeroViewfinder from "./HeroViewfinder";
 import { heroFrames } from "@/lib/projects";
 import { clamp } from "@/lib/utils";
 
@@ -22,17 +23,19 @@ const SHOWN = "inset(0% 0% 0% 0%)";
  * One pinned stage in a 240svh track. Scroll drives it and scrolling back
  * reverses it:
  *
+ *   0.02 to 0.12  the viewfinder HUD fades away
  *   0.20 to 0.30  CUT   second photograph wipes in inside the letters
  *   0.42 to 0.52  CUT   third photograph wipes in inside the letters
  *   0.55 to 0.90  PUSH  the letters grow until the media fills the screen
  *   0.88 to 1.00  the frame settles into the dark studio of the camera scene
  *
  * It starts in exactly the state the loader ends in, so the intro and the
- * hero read as one shot. No copy: the media and the letters carry it.
+ * hero read as one shot. The viewfinder follows the measured wordmark.
  */
 export default function Hero() {
   const trackRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
+  const [bounds, setBounds] = useState<WordmarkBounds | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -71,6 +74,7 @@ export default function Hero() {
         <OffscriptMask
           overlayScale={reduceMotion ? undefined : overlayScale}
           overlayOpacity={reduceMotion ? undefined : overlayOpacity}
+          onMeasure={setBounds}
         >
           <motion.div
             className="absolute inset-[-6%] will-change-transform"
@@ -99,6 +103,9 @@ export default function Hero() {
             <HeroMedia />
           </motion.div>
         </OffscriptMask>
+
+        {/* Camera viewfinder: follows the wordmark, fades out as you scroll */}
+        <HeroViewfinder bounds={bounds} progress={scrollYProgress} />
 
         {/* Settles into the camera scene's studio tone */}
         {!reduceMotion && (
