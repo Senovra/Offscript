@@ -3,6 +3,16 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
+/**
+ * BUILD STATE
+ * "active" : development is running (pulsing indicators, "in progress" wording)
+ * "paused" : development is paused between working sessions (calm indicators,
+ *            formal "paused" wording)
+ * Change this one value to switch the whole dashboard.
+ */
+const BUILD_STATE: "active" | "paused" = "paused";
+const PAUSED = BUILD_STATE === "paused";
+
 /* --------------------------------------------------------------------------
    DEVELOPMENT DASHBOARD DATA
    Temporary client-facing tool. Remove once the full website is finished.
@@ -189,13 +199,18 @@ const WAITING_TASKS = ALL_ITEMS.filter(
 ).length;
 
 /** Update messages shown in the feed. Written by hand; not a live build log. */
-const DEVELOPMENT_LOGS = [
+const BASE_LOGS = [
   "Homepage experience built and tested — awaiting Offscript's footage and details.",
   "Services now has an interactive explorer — awaiting Offscript's descriptions and photography.",
   "Layouts are complete with placeholder media — awaiting Offscript's photography and video.",
   "Enquiry form prepares a ready-to-send email — contact details awaited from Offscript.",
   "Privacy and Terms drafted — awaiting company details and legal review.",
 ];
+
+const PAUSED_NOTICE =
+  "Development is paused for now — work resumes at the next working session.";
+
+const DEVELOPMENT_LOGS = PAUSED ? [PAUSED_NOTICE, ...BASE_LOGS] : BASE_LOGS;
 
 const FEED_INTERVAL_MS = 4000;
 const TIME_ZONE = "Asia/Colombo";
@@ -367,7 +382,7 @@ export default function Maintenance() {
         <div className="flex flex-col items-end gap-1.5">
           <div className="type-mono flex items-center gap-2.5 text-[0.6rem] text-fog sm:text-xs">
             <span className="relative flex h-3 w-3 shrink-0 items-center justify-center">
-              {!shouldReduceMotion && (
+              {!shouldReduceMotion && !PAUSED && (
                 <motion.span
                   aria-hidden="true"
                   className="absolute h-3 w-3 rounded-full border border-[#C7A46A]/60"
@@ -382,9 +397,13 @@ export default function Maintenance() {
                   }}
                 />
               )}
-              <span className="relative h-1.5 w-1.5 rounded-full bg-[#C7A46A]" />
+              <span
+                className={`relative h-1.5 w-1.5 rounded-full ${
+                  PAUSED ? "bg-[#A7A095]" : "bg-[#C7A46A]"
+                }`}
+              />
             </span>
-            <span>DEVELOPMENT IN PROGRESS</span>
+            <span>{PAUSED ? "DEVELOPMENT PAUSED" : "DEVELOPMENT IN PROGRESS"}</span>
           </div>
 
           <div
@@ -444,7 +463,7 @@ export default function Maintenance() {
             transition={{ duration: 0.65, delay: 0.1 }}
             className="type-mono mt-7 text-[0.65rem] tracking-[0.18em] text-[#C7A46A] sm:text-xs"
           >
-            BUILD IN PROGRESS
+            {PAUSED ? "BUILD PAUSED" : "BUILD IN PROGRESS"}
           </motion.p>
 
           <motion.h1
@@ -494,7 +513,11 @@ export default function Maintenance() {
             <div
               className="flex items-center gap-3 flex-1"
               role="status"
-              aria-label="Website development is actively progressing"
+              aria-label={
+                PAUSED
+                  ? "Website development is currently paused"
+                  : "Website development is actively progressing"
+              }
             >
               <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.12em] text-ash sm:text-[0.65rem]">
                 BUILD STATUS
@@ -505,13 +528,17 @@ export default function Maintenance() {
                 className="relative h-px min-w-0 flex-1 overflow-hidden bg-white/[0.10]"
               >
                 <motion.div
-                  className="absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-transparent via-[#C7A46A]/90 to-[#E6D0A6]"
+                  className={`absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-transparent via-[#C7A46A]/90 to-[#E6D0A6] ${
+                    PAUSED ? "opacity-40" : ""
+                  }`}
                   initial={{ x: "-100%" }}
                   animate={
-                    shouldReduceMotion ? { x: "0%" } : { x: ["-100%", "250%"] }
+                    shouldReduceMotion || PAUSED
+                      ? { x: "0%" }
+                      : { x: ["-100%", "250%"] }
                   }
                   transition={
-                    shouldReduceMotion
+                    shouldReduceMotion || PAUSED
                       ? { duration: 0 }
                       : {
                           duration: 3.2,
@@ -523,15 +550,23 @@ export default function Maintenance() {
                 />
               </div>
 
-              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.1em] text-[#D2B783] sm:text-[0.65rem]">
-                ACTIVE
+              <span
+                className={`type-mono shrink-0 text-[0.55rem] tracking-[0.1em] sm:text-[0.65rem] ${
+                  PAUSED ? "text-ash" : "text-[#D2B783]"
+                }`}
+              >
+                {PAUSED ? "PAUSED" : "ACTIVE"}
               </span>
             </div>
 
             {/* Next Up / Current Focus Spotlight Badge */}
             <div className="type-mono inline-flex items-center gap-2 rounded-lg border border-[#C7A46A]/25 bg-[#C7A46A]/5 px-3 py-1 text-[0.6rem] text-fog">
-              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#C7A46A]" />
-              <span className="text-ash">NEXT FOCUS:</span>
+              <span
+                className={`inline-block h-1.5 w-1.5 rounded-full bg-[#C7A46A] ${
+                  PAUSED ? "opacity-50" : "animate-pulse"
+                }`}
+              />
+              <span className="text-ash">{PAUSED ? "RESUMING WITH:" : "NEXT FOCUS:"}</span>
               <span className="text-[#D2B783]">{FOCUS}</span>
             </div>
           </div>
@@ -1000,7 +1035,9 @@ export default function Maintenance() {
           </p>
 
           <p className="type-body mt-3 w-full text-balance text-xs leading-6 text-ash sm:text-sm">
-            Further refinements, content integration and final checks will continue as the website progresses towards launch.
+            {PAUSED
+              ? "Development is currently paused and will resume at the next working session. Further refinements, content integration and final checks will continue thereafter."
+              : "Further refinements, content integration and final checks will continue as the website progresses towards launch."}
           </p>
         </motion.section>
       </div>
