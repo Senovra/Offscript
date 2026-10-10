@@ -1,6 +1,7 @@
 /**
- * Small shared helpers: class joining, maths, timecode and the two motion easings.
- * Easing arrays are used by Framer Motion. Matching CSS versions live in globals.css.
+ * Small shared helpers: class joining, maths, timecode, asset paths and the
+ * two motion easings. Easing arrays are used by Framer Motion. Matching CSS
+ * versions live in globals.css.
  */
 
 export function cn(...inputs: Array<string | false | null | undefined>): string {
@@ -17,6 +18,16 @@ export function lerp(a: number, b: number, t: number): number {
 
 export function pad2(value: number): string {
   return String(Math.max(0, Math.floor(value))).padStart(2, "0");
+}
+
+/**
+ * Prefixes a path from /public with the site's base path.
+ * Needed only for raw URLs (fetch, <video src>, the 3D model). Next's <Link>
+ * adds the base path by itself. Empty in development and on a custom domain.
+ */
+export function assetPath(path: string): string {
+  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 /**

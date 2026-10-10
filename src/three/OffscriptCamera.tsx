@@ -14,8 +14,9 @@ import {
   type Object3D,
   type Texture,
 } from "three";
+import { assetPath } from "@/lib/utils";
 
-export const MODEL_URL = "/models/offscript-camera.glb";
+export const MODEL_URL = assetPath("/models/offscript-camera.glb");
 
 /** Rotation (radians) that makes the lens face the viewer at rest. */
 const FRONT_OFFSET = 0;

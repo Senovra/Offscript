@@ -6,6 +6,12 @@ import { getProject, projects } from "@/lib/projects";
 
 type Params = { slug: string };
 
+/**
+ * Static export: every project page is generated at build time from
+ * src/lib/projects.ts. Anything not listed there does not exist.
+ */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
 }

@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
+import { assetPath } from "@/lib/utils";
 
 /** Drop your video here: public/video/hero.mp4 (muted, H.264, ideally under 10 MB). */
-export const HERO_VIDEO = "/video/hero.mp4";
+export const HERO_VIDEO = assetPath("/video/hero.mp4");
 
 interface HeroMediaProps {
   src?: string;
