@@ -12,6 +12,8 @@ interface CameraSceneProps {
   progress: MotionValue<number>;
   /** False when the section is off-screen. */
   active: boolean;
+  /** Called once the model has loaded and the camera is showing. */
+  onReady?: () => void;
 }
 
 /**
@@ -23,9 +25,13 @@ interface CameraSceneProps {
  * one frame, so the GPU compiles shaders and uploads textures before the
  * visitor arrives, and the camera appears without a hitch.
  */
-export default function CameraScene({ progress, active }: CameraSceneProps) {
+export default function CameraScene({ progress, active, onReady }: CameraSceneProps) {
   const [loaded, setLoaded] = useState(false);
-  const handleLoaded = useCallback(() => setLoaded(true), []);
+
+  const handleLoaded = useCallback(() => {
+    setLoaded(true);
+    onReady?.();
+  }, [onReady]);
 
   const coarsePointer =
     typeof window !== "undefined" &&

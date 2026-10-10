@@ -35,8 +35,8 @@ interface RawPage {
   preview: RoadmapItem[];
 }
 
-/** The page the team is working on next. Change when the real priority changes. */
-const FOCUS = "03 Services (Interactive Layout & Animations)";
+/** The work the team is on next. Change when the real priority changes. */
+const FOCUS = "Content Integration & Final Checks";
 
 const RAW_PAGES: RawPage[] = [
   {
@@ -79,14 +79,16 @@ const RAW_PAGES: RawPage[] = [
   {
     number: "03",
     name: "Services",
-    description: "Service structure in place; interactive layout and animations are next.",
-    status: "Design in progress",
-    state: "active",
+    description:
+      "Interactive service explorer built; awaiting Offscript's descriptions and photography.",
+    status: "Awaiting content",
+    state: "pending",
     previewLabel: "Development roadmap",
     preview: [
       { name: "Service Names & Order", progress: 100 },
-      { name: "Page Structure & Numbered List", progress: 100 },
-      { name: "Interactive Layout & Animations", progress: 20 },
+      { name: "Page Structure & Header", progress: 100 },
+      { name: "Interactive Service Explorer (Hover, Click & Media Wipes)", progress: 90 },
+      { name: "Mobile & Touch Behaviour (Tap to Open)", progress: 90 },
       { name: "Service Descriptions (Offscript)", progress: 0, waiting: true },
       { name: "Service Photography (Offscript)", progress: 0, waiting: true },
     ],
@@ -189,8 +191,8 @@ const WAITING_TASKS = ALL_ITEMS.filter(
 /** Update messages shown in the feed. Written by hand; not a live build log. */
 const DEVELOPMENT_LOGS = [
   "Homepage intro, camera scene and viewfinder frame built — final review pending.",
+  "Services now has an interactive explorer — awaiting Offscript's descriptions and photography.",
   "Layouts are complete with placeholder media — awaiting Offscript's photography and video.",
-  "Services page: interactive layout and animations are the next focus.",
   "Enquiry form prepares a ready-to-send email — contact details awaited from Offscript.",
   "Privacy and Terms drafted — awaiting company details and legal review.",
 ];

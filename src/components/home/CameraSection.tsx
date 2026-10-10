@@ -11,7 +11,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { CameraBackdrop, CameraReadout } from "./CameraOverlay";
-import { clamp } from "@/lib/utils";
+import { assetPath, clamp } from "@/lib/utils";
 
 /**
  * Set to false to remove the camera from the page entirely (the 3D code stays
@@ -21,6 +21,25 @@ const CAMERA_ENABLED = true;
 
 /** The 3D chunk is only downloaded on demand, never on the server. */
 const CameraScene = dynamic(() => import("@/three/CameraScene"), { ssr: false });
+
+/** Same file the camera loads, fetched early so it is already cached. */
+const MODEL_FILE = assetPath("/models/offscript-camera.glb");
+
+/** How long after the page has loaded the downloads start, and the scene mounts. */
+const WARM_DELAY_MS = 800;
+const ARM_DELAY_MS = 2000;
+
+/** Warm-up runs once per page load, however often the section re-renders. */
+let warmed = false;
+
+function warmDownloads() {
+  if (warmed) return;
+  warmed = true;
+  // Pulls the 3D code into the cache; the dynamic import above then resolves at once
+  void import("@/three/CameraScene");
+  // Pulls the model into the browser cache for the loader that fetches it later
+  fetch(MODEL_FILE).catch(() => {});
+}
 
 /** Static fallback: aperture rings, shown when WebGL is unavailable. */
 function LensGraphic() {
@@ -56,11 +75,15 @@ type IdleWindow = Window & {
  *
  * A dedicated pinned scene between the hero and Work. The camera makes one
  * slow turn while the six disciplines appear behind it, one for each sixth of
- * the turn, and a ring marker travels round with it. The scene is about
- * Offscript's range, not the camera as a product.
+ * the turn, and a ring marker travels round with it.
  *
- * Loading: about 3.5 seconds after the page loads (once the intro has played
- * and the browser is idle) the 3D chunk and the GLB start downloading.
+ * Loading, so a fast scroll still finds the camera ready:
+ *   1. Shortly after the page has loaded, the 3D code and the model file are
+ *      downloaded quietly into the cache (nothing is drawn yet).
+ *   2. A little later the scene itself is started, in a spare moment.
+ *   3. As a safety net it also starts when the section is two screens away.
+ *   4. If a visitor still arrives first, a small "Loading camera" label shows
+ *      until the camera fades in at the right angle for their scroll position.
  * Visitors with Data Saver on only load it when the section is near.
  *
  * Reduced motion: no pinned track, the camera rests in its opening pose.
@@ -69,10 +92,11 @@ type IdleWindow = Window & {
 export default function CameraSection() {
   const trackRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
-  const near = useInView(trackRef, { margin: "100% 0px 100% 0px" });
+  const near = useInView(trackRef, { margin: "200% 0px 200% 0px" });
   const visible = useInView(trackRef, { margin: "0px" });
 
   const [armed, setArmed] = useState(false);
+  const [ready, setReady] = useState(false);
   const [webgl, setWebgl] = useState<boolean | null>(null);
 
   const resting = useMotionValue(0);
@@ -97,9 +121,12 @@ export default function CameraSection() {
     }
   }, []);
 
-  // Arm the 3D scene: immediately when near, otherwise early on idle
+  // Start the scene when near, and also warm up early in the background
   useEffect(() => {
+    if (webgl !== true) return;
+
     if (near) {
+      warmDownloads();
       setArmed(true);
       return;
     }
@@ -110,25 +137,42 @@ export default function CameraSection() {
     if (connection?.saveData) return;
 
     const idleWindow = window as IdleWindow;
+    let warmTimer = 0;
+    let armTimer = 0;
     let idleHandle = 0;
+    let cancelled = false;
 
-    const timer = window.setTimeout(() => {
-      if (idleWindow.requestIdleCallback) {
-        idleHandle = idleWindow.requestIdleCallback(() => setArmed(true), {
-          timeout: 3000,
-        });
-      } else {
-        setArmed(true);
-      }
-    }, 3500);
+    const begin = () => {
+      if (cancelled) return;
+      warmTimer = window.setTimeout(warmDownloads, WARM_DELAY_MS);
+      armTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        if (idleWindow.requestIdleCallback) {
+          idleHandle = idleWindow.requestIdleCallback(() => setArmed(true), {
+            timeout: 2000,
+          });
+        } else {
+          setArmed(true);
+        }
+      }, ARM_DELAY_MS);
+    };
+
+    if (document.readyState === "complete") {
+      begin();
+    } else {
+      window.addEventListener("load", begin, { once: true });
+    }
 
     return () => {
-      window.clearTimeout(timer);
+      cancelled = true;
+      window.removeEventListener("load", begin);
+      window.clearTimeout(warmTimer);
+      window.clearTimeout(armTimer);
       if (idleHandle && idleWindow.cancelIdleCallback) {
         idleWindow.cancelIdleCallback(idleHandle);
       }
     };
-  }, [near]);
+  }, [near, webgl]);
 
   if (!CAMERA_ENABLED) return null;
 
@@ -170,7 +214,30 @@ export default function CameraSection() {
 
         {armed && webgl && (
           <div className="pointer-events-none absolute inset-0">
-            <CameraScene progress={source} active={visible} />
+            <CameraScene
+              progress={source}
+              active={visible}
+              onReady={() => setReady(true)}
+            />
+          </div>
+        )}
+
+        {/* Shown only if the visitor arrives before the camera is ready */}
+        {webgl && (
+          <div
+            role="status"
+            aria-live="polite"
+            className={`type-mono pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 text-fog transition-opacity duration-700 ${
+              ready ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <span
+              aria-hidden="true"
+              className={`h-1.5 w-1.5 rounded-full bg-paper ${
+                reduceMotion ? "" : "animate-pulse"
+              }`}
+            />
+            {ready ? "" : "Loading camera"}
           </div>
         )}
 

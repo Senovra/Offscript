@@ -17,7 +17,29 @@ function currentIndex(turn: number): number {
   return clamp(Math.floor(turn * COUNT), 0, COUNT - 1);
 }
 
-/** One discipline name, set in outline, drifting sideways as the camera turns. */
+/** Opacity of one discipline across its sixth of the turn (shared by both layouts). */
+function useWordOpacity(index: number, turn: MotionValue<number>) {
+  const first = index === 0;
+  const last = index === COUNT - 1;
+  const start = index * STEP;
+  const end = (index + 1) * STEP;
+
+  return useTransform(
+    turn,
+    [
+      first ? -2 : start - 0.05,
+      first ? -1 : start + 0.02,
+      last ? 3 : end - 0.03,
+      last ? 4 : end + 0.03,
+    ],
+    [0, 1, 1, 0]
+  );
+}
+
+/**
+ * Wide screens: one discipline name, set in outline, drifting sideways BEHIND
+ * the camera as it turns.
+ */
 function DisciplineWord({
   index,
   turn,
@@ -26,16 +48,10 @@ function DisciplineWord({
   turn: MotionValue<number>;
 }) {
   const title = services[index].title;
-  const first = index === 0;
-  const last = index === COUNT - 1;
   const start = index * STEP;
   const end = (index + 1) * STEP;
 
-  const opacity = useTransform(
-    turn,
-    [first ? -2 : start - 0.05, first ? -1 : start + 0.02, last ? 3 : end - 0.03, last ? 4 : end + 0.03],
-    [0, 1, 1, 0]
-  );
+  const opacity = useWordOpacity(index, turn);
   const x = useTransform(turn, [start - 0.05, end + 0.03], ["10%", "-10%"]);
 
   const vw = Math.min(18, 90 / (title.length * 0.7));
@@ -57,8 +73,41 @@ function DisciplineWord({
 }
 
 /**
- * Sits BEHIND the camera. The discipline names change as the camera turns,
- * and a thin ring with six ticks carries a marker round as it rotates.
+ * Upright screens: the name sits in its own band ABOVE the camera, solid and
+ * easy to read. All six share one grid cell so the band keeps a constant height.
+ */
+function TopWord({
+  index,
+  turn,
+}: {
+  index: number;
+  turn: MotionValue<number>;
+}) {
+  const opacity = useWordOpacity(index, turn);
+  const start = index * STEP;
+  const end = (index + 1) * STEP;
+  const y = useTransform(turn, [start - 0.05, start + 0.04, end - 0.04, end + 0.03], [10, 0, 0, -10]);
+
+  return (
+    <motion.p
+      className="type-display-wide col-start-1 row-start-1 select-none text-balance text-center text-paper"
+      style={{
+        opacity,
+        y,
+        fontSize: "clamp(1.75rem, min(9.5vw, 5.5svh), 2.75rem)",
+        lineHeight: 1.05,
+      }}
+    >
+      {services[index].title}
+    </motion.p>
+  );
+}
+
+/**
+ * Sits BEHIND the camera. On wide screens the discipline names drift across the
+ * stage behind it; on upright screens (phones, tablets held upright) the name
+ * moves to a band above the camera so it stays readable. A thin ring with six
+ * ticks carries a marker round as the camera turns.
  */
 export function CameraBackdrop({ turn }: { turn: MotionValue<number> }) {
   const [active, setActive] = useState(0);
@@ -68,9 +117,17 @@ export function CameraBackdrop({ turn }: { turn: MotionValue<number> }) {
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center">
+      {/* Wide screens: outlined names behind the camera */}
+      <div className="absolute inset-0 flex items-center justify-center portrait:hidden">
         {services.map((service, index) => (
           <DisciplineWord key={service.id} index={index} turn={turn} />
+        ))}
+      </div>
+
+      {/* Upright screens: the name in a band above the camera */}
+      <div className="absolute inset-x-0 top-[calc(var(--header-h)+env(safe-area-inset-top,0px)+0.5rem)] hidden px-[var(--gutter)] portrait:grid">
+        {services.map((service, index) => (
+          <TopWord key={service.id} index={index} turn={turn} />
         ))}
       </div>
 
