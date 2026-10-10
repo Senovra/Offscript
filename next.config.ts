@@ -1,19 +1,30 @@
 import type { NextConfig } from "next";
 
+/**
+ * Next.js configuration for the Offscript website.
+ *
+ * Remote image hosts below are allowed for DEVELOPMENT PLACEHOLDER photography only.
+ * Once real Offscript media is stored in /public/images or a production media host,
+ * these entries can be removed or replaced.
+ */
 const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    agentFeedback: true,
-  },
-  cacheComponents: true,
-  partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
+  reactStrictMode: true,
+
+  images: {
+    // Modern formats first; Next picks the best one the browser supports.
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
       },
-    },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

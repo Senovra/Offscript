@@ -1,0 +1,328 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   OFFSCRIPT: GLOBAL STYLES (Tailwind CSS 4)
+   Controlled neutral palette. Colour comes from photography and video.
+   Three type levels: Display, Editorial, Utility.
+   ========================================================================== */
+
+@theme inline {
+  /* Tonal surfaces, deep to light */
+  --color-ink: #0a0a0b;
+  --color-coal: #111112;
+  --color-graphite: #18181a;
+  --color-slate: #222225;
+  --color-steel: #38383c;
+  --color-ash: #6b6b71;
+  --color-fog: #a3a3a9;
+  --color-bone: #e6e5e1;
+  --color-paper: #f2f1ed;
+
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease-cut: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-push: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  --bg: #0a0a0b;
+  --fg: #f2f1ed;
+  --line: rgba(242, 241, 237, 0.14);
+  --gutter: clamp(1.25rem, 3.4vw, 3.25rem);
+  --header-h: 4.25rem;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   Base styles live INSIDE Tailwind's base layer. Unlayered rules beat every
+   Tailwind utility, which used to override button backgrounds, borders and
+   text colours (this is why the contact tags looked unselectable).
+   -------------------------------------------------------------------------- */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  body {
+    min-height: 100svh;
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  img,
+  video,
+  svg,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Form autofill: keep the field colour instead of the browser's blue/yellow.
+   Set --field-bg on the form to match its background.
+   -------------------------------------------------------------------------- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--field-bg, #222225) inset !important;
+  box-shadow: 0 0 0 1000px var(--field-bg, #222225) inset !important;
+  -webkit-text-fill-color: var(--fg) !important;
+  caret-color: var(--fg);
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+input:autofill {
+  box-shadow: 0 0 0 1000px var(--field-bg, #222225) inset !important;
+  -webkit-text-fill-color: var(--fg) !important;
+  caret-color: var(--fg);
+}
+
+/* --------------------------------------------------------------------------
+   Typography
+   DISPLAY   : .type-display / .type-display-wide + .size-mega / .size-xl
+   EDITORIAL : .type-editorial + .size-lg / .size-md, .type-serif for emphasis
+   UTILITY   : .type-mono
+   -------------------------------------------------------------------------- */
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.type-display-wide {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.type-editorial {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.type-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: -0.02em;
+}
+
+.type-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.type-body {
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  line-height: 1.6;
+  max-width: 44ch;
+}
+
+.size-mega {
+  font-size: clamp(2.75rem, 7vw, 6.5rem);
+}
+
+.size-xl {
+  font-size: clamp(2.25rem, 4.6vw, 4.75rem);
+}
+
+.size-lg {
+  font-size: clamp(1.75rem, 3vw, 3rem);
+}
+
+.size-md {
+  font-size: clamp(1.25rem, 1.9vw, 1.875rem);
+}
+
+/* --------------------------------------------------------------------------
+   Film grain: one static tile, no animation
+   -------------------------------------------------------------------------- */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.2 -0.1'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 220px 220px;
+}
+
+/* --------------------------------------------------------------------------
+   Layout helpers
+   -------------------------------------------------------------------------- */
+.page-gutter {
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.hairline-top {
+  border-top: 1px solid var(--line);
+}
+
+.hairline-bottom {
+  border-bottom: 1px solid var(--line);
+}
+
+.stage-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   CSS-only motion
+   -------------------------------------------------------------------------- */
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  51% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+.scroll-cue-line {
+  display: block;
+  width: 1px;
+  height: 2.5rem;
+  background: currentColor;
+  animation: scroll-cue 2.4s var(--ease-cut) infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Lenis
+   -------------------------------------------------------------------------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+@media (hover: none) {
+  a,
+  button {
+    -webkit-touch-callout: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .scroll-cue-line {
+    animation: none;
+  }
+}
