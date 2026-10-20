@@ -43,8 +43,8 @@ jobs:
       - name: Build the static site
         run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /Offscript
-          NEXT_PUBLIC_SITE_URL: https://senovra.github.io/Offscript
+          NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_SITE_URL: https://offscript.website
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@v3
