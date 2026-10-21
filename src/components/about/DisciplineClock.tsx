@@ -171,7 +171,7 @@ function ScrollClock() {
               {current.number} / {String(COUNT).padStart(2, "0")}
             </p>
 
-            <div className="relative mt-4 min-h-[8rem] md:min-h-[11rem]" aria-live="polite">
+            <div className="relative mt-4 min-h-[6rem] md:min-h-[8rem]" aria-live="polite">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={current.id}
@@ -183,9 +183,6 @@ function ScrollClock() {
                   <h2 className="type-editorial text-[clamp(2.25rem,5vw,4.75rem)] tracking-[-0.04em]">
                     {current.title}
                   </h2>
-                  <p className="type-mono mt-5 text-ash">
-                    Description to come from Offscript
-                  </p>
                 </motion.div>
               </AnimatePresence>
             </div>

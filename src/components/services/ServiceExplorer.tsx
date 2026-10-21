@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import FitImage from "@/components/ui/FitImage";
 import { services } from "@/lib/projects";
 import { EASE_CUT, EASE_PUSH, pad2 } from "@/lib/utils";
-
-const DESCRIPTION_NOTE = "Description to come from Offscript";
 
 /**
  * SERVICES EXPLORER
@@ -16,8 +14,9 @@ const DESCRIPTION_NOTE = "Description to come from Offscript";
  *   Hover, click or keyboard focus on a service wipes the photo to it. Rows do
  *   not expand, so the list never jumps under the cursor.
  * Touch and small screens: nothing depends on hover. Tapping a service opens it
- *   in place (photo, description line, link). One service is open at a time.
- * The photos are placeholder stock photography until Offscript supplies its own.
+ *   in place (photo, description, link). One service is open at a time.
+ * Photos keep their proportions: a photo that fits its frame fills it, and one
+ * that would be cropped too much is shown whole (see FitImage).
  */
 export default function ServiceExplorer() {
   const reduceMotion = useReducedMotion();
@@ -90,23 +89,20 @@ export default function ServiceExplorer() {
                     >
                       <div className="pb-8">
                         <div className="relative aspect-[16/10] overflow-hidden bg-graphite">
-                          <Image
+                          <FitImage
                             src={service.image}
                             alt={service.imageAlt}
-                            fill
                             sizes="100vw"
-                            className="object-cover"
                           />
-                          <span className="type-mono absolute left-3 top-3 border border-paper/50 bg-ink/40 px-2 py-1 text-paper">
-                            Placeholder
-                          </span>
                         </div>
 
-                        <p className="type-mono mt-5 text-ash">{DESCRIPTION_NOTE}</p>
+                        <p className="mt-5 text-[1rem] leading-relaxed text-fog">
+                          {service.description}
+                        </p>
 
                         <Link
                           href="/contact"
-                          className="type-mono mt-4 inline-flex h-11 items-center gap-3 border-b border-current"
+                          className="type-mono mt-5 inline-flex h-11 items-center gap-3 border-b border-current"
                         >
                           Start a project <span aria-hidden="true">→</span>
                         </Link>
@@ -123,7 +119,7 @@ export default function ServiceExplorer() {
       {/* Desktop: pinned photo window */}
       <div className="hidden md:col-span-6 md:block">
         <div className="sticky top-[calc(var(--header-h)+1.5rem)]">
-          <div className="relative aspect-[4/5] overflow-hidden bg-graphite">
+          <div className="relative aspect-[4/3] max-h-[50svh] w-full overflow-hidden bg-graphite">
             <AnimatePresence initial={false}>
               <motion.div
                 key={current.id}
@@ -135,16 +131,14 @@ export default function ServiceExplorer() {
               >
                 <motion.div
                   className="absolute inset-0"
-                  initial={reduceMotion ? false : { scale: 1.15 }}
+                  initial={reduceMotion ? false : { scale: 1.1 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 1.4, ease: EASE_PUSH }}
                 >
-                  <Image
+                  <FitImage
                     src={current.image}
                     alt={current.imageAlt}
-                    fill
                     sizes="(min-width: 768px) 46vw, 100vw"
-                    className="object-cover"
                   />
                 </motion.div>
               </motion.div>
@@ -155,21 +149,16 @@ export default function ServiceExplorer() {
               className="pointer-events-none absolute inset-0 z-10"
               style={{
                 background:
-                  "linear-gradient(to top, rgba(10,10,11,0.55) 0%, transparent 40%)",
+                  "linear-gradient(to top, rgba(10,10,11,0.5) 0%, transparent 35%)",
               }}
             />
 
-            <div className="type-mono absolute inset-x-4 bottom-4 z-10 flex items-center justify-between text-paper">
-              <span>
-                {pad2(active + 1)} / {pad2(services.length)}
-              </span>
-              <span className="border border-paper/50 bg-ink/40 px-2 py-1">
-                Placeholder
-              </span>
-            </div>
+            <p className="type-mono absolute bottom-4 left-4 z-10 text-paper">
+              {pad2(active + 1)} / {pad2(services.length)}
+            </p>
           </div>
 
-          <div className="mt-6 min-h-[7rem]" aria-live="polite">
+          <div className="mt-6 min-h-[11rem]" aria-live="polite">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={current.id}
@@ -183,7 +172,9 @@ export default function ServiceExplorer() {
                   <span className="mx-2">—</span>
                   {current.title}
                 </p>
-                <p className="type-mono mt-3 text-fog">{DESCRIPTION_NOTE}</p>
+                <p className="mt-3 max-w-[52ch] text-[0.9375rem] leading-relaxed text-fog">
+                  {current.description}
+                </p>
                 <Link
                   href="/contact"
                   className="group type-mono mt-4 inline-flex h-11 items-center gap-3 border-b border-current"

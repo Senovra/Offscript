@@ -18,12 +18,7 @@ export default function WorkPage() {
             Selected <span className="type-serif">Work</span>
           </>
         }
-      >
-        <p className="type-mono mt-8 max-w-[52ch] text-ash">
-          Placeholder media. Stock photography used to design this layout, not
-          Offscript projects.
-        </p>
-      </PageHeader>
+      />
 
       <ul className="group/list page-gutter space-y-16 pb-28 md:space-y-28">
         {projects.map((project, index) => (

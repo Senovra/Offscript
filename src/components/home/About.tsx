@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import FitImage from "@/components/ui/FitImage";
 import Eyebrow from "@/components/ui/Eyebrow";
-import Note from "@/components/ui/Note";
-import { aboutImages } from "@/lib/projects";
+import { aboutCopy, aboutImages } from "@/lib/projects";
 import { EASE_CUT } from "@/lib/utils";
 
 const HIDDEN = "inset(0% 0% 100% 0%)";
@@ -13,8 +12,8 @@ const SHOWN = "inset(0% 0% 0% 0%)";
 
 /**
  * ABOUT
- * Visually led: two placeholder images composed around the heading.
- * The real introduction comes from Offscript.
+ * Visually led: two photos composed around Offscript's own introduction (the
+ * opening of the About page). Each photo keeps its own proportions.
  */
 export default function About() {
   const reduceMotion = useReducedMotion();
@@ -31,17 +30,17 @@ export default function About() {
       <div className="page-gutter">
         <Eyebrow index="03">About</Eyebrow>
 
-        <div className="mt-12 grid gap-10 md:mt-20 md:grid-cols-12 md:gap-8">
+        <div className="mt-12 grid items-start gap-10 md:mt-20 md:grid-cols-12 md:gap-8">
           <motion.div
             {...reveal()}
-            className="relative aspect-[4/5] overflow-hidden bg-graphite md:col-span-5"
+            className="overflow-hidden bg-graphite md:col-span-5"
           >
-            <Image
+            <FitImage
+              natural
+              defaultRatio={4 / 5}
               src={aboutImages[0].src}
               alt={aboutImages[0].alt}
-              fill
               sizes="(min-width: 768px) 42vw, 100vw"
-              className="object-cover"
             />
           </motion.div>
 
@@ -51,12 +50,9 @@ export default function About() {
                 About <span className="type-serif">Offscript</span>
               </h2>
 
-              <Note>
-                <p>
-                  The introduction goes here. A couple of
-                  sentences in your own words is plenty.
-                </p>
-              </Note>
+              <p className="max-w-[46ch] text-[1.0625rem] leading-relaxed text-fog md:text-lg">
+                {aboutCopy.teaser}
+              </p>
 
               <Link
                 href="/about"
@@ -68,14 +64,14 @@ export default function About() {
 
             <motion.div
               {...reveal(0.15)}
-              className="relative aspect-[16/10] w-[78%] self-end overflow-hidden bg-graphite"
+              className="w-[78%] self-end overflow-hidden bg-graphite"
             >
-              <Image
+              <FitImage
+                natural
+                defaultRatio={16 / 10}
                 src={aboutImages[1].src}
                 alt={aboutImages[1].alt}
-                fill
                 sizes="(min-width: 768px) 36vw, 78vw"
-                className="object-cover"
               />
             </motion.div>
           </div>

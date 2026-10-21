@@ -1,51 +1,39 @@
 import type { NextConfig } from "next";
 
 /**
- * Static export for GitHub Pages.
+ * Static export for GitHub Pages, served from the root of offscript.website.
  *
  * BASE PATH
- *   Project site (senovra.github.io/Offscript) : "/Offscript"  (the default in production)
- *   Custom domain (offscript.website)          : "" (empty)
- * Set NEXT_PUBLIC_BASE_PATH in the build environment to override. An empty
- * value means "serve from the root". In development it is always empty, so
- * `npm run dev` still runs at http://localhost:3000.
+ *   Production (offscript.website) : "" (empty). The site lives at the root.
+ *   The workflow sets NEXT_PUBLIC_BASE_PATH to "" and this file now defaults to
+ *   "" as well, so a build made without the variable can no longer produce
+ *   /Offscript paths by accident. Only set it for a project-site URL such as
+ *   senovra.github.io/Offscript.
  *
- * assetPrefix is not set: Next derives it from basePath.
+ * IMAGES
+ *   The default image optimiser needs a server, which static hosting does not
+ *   have. Instead a small custom loader (src/lib/imageLoader.ts) builds the
+ *   right-sized URL itself: Cloudinary files are resized and converted by
+ *   Cloudinary, Unsplash placeholders by Unsplash. No remote host list is
+ *   needed because nothing is fetched through Next.js.
  */
-const basePath =
-  process.env.NEXT_PUBLIC_BASE_PATH ??
-  (process.env.NODE_ENV === "production" ? "/Offscript" : "");
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   output: "export",
   basePath,
-  // Exports /about as about/index.html, which static hosts serve reliably
   trailingSlash: true,
 
-  // Makes the base path available to the browser code (see assetPath in src/lib/utils.ts)
+  // Makes the base path available to browser code (see assetPath in src/lib/utils.ts)
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
 
   images: {
-    // The image optimiser needs a server, which static hosting doesn't have.
-    // Images are served as they are. Real media should be sized before upload.
-    unoptimized: true,
-    // Remote placeholder hosts, for development photography only.
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "images.pexels.com",
-        pathname: "/**",
-      },
-    ],
+    loader: "custom",
+    loaderFile: "./src/lib/imageLoader.ts",
   },
 };
 

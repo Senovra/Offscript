@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Logo from "@/components/ui/Logo";
 import { legalLinks, navLinks } from "@/lib/projects";
 
 /**
@@ -271,6 +272,7 @@ function InstagramMenu() {
 /**
  * Restrained: wordmark and tagline, navigation, legal links, socials and
  * contact, back-to-top. Third-party credits live on the dedicated /credits page.
+ * The logo is the WHITE version from src/lib/assets.ts (text until it is added).
  */
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -282,7 +284,11 @@ export default function Footer() {
       <div className="page-gutter">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-6">
-            <p className="type-display-wide size-lg">Offscript</p>
+            <Logo
+              variant="white"
+              className="h-8 w-auto md:h-10"
+              fallbackClassName="type-display-wide size-lg"
+            />
             {/* Space for the brand tagline */}
             <p className="mt-4 max-w-[32ch] text-fog">Brand tagline comes here</p>
           </div>

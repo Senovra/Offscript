@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
+import { ASSETS } from "@/lib/assets";
+import { videoUrl } from "@/lib/cloudinary";
 import { assetPath } from "@/lib/utils";
 
-/** Drop your video here: public/video/hero.mp4 (muted, H.264, ideally under 10 MB). */
+/** Local fallback: public/video/hero.mp4 (muted, H.264, ideally under 10 MB). */
 export const HERO_VIDEO = assetPath("/video/hero.mp4");
 
 interface HeroMediaProps {
@@ -13,16 +15,20 @@ interface HeroMediaProps {
 
 /**
  * Optional looping video layer.
- * If the file does not exist, nothing is rendered and the photography
+ * Source order: the Cloudinary URL in src/lib/assets.ts (hero.video), then the
+ * local file. If neither plays, nothing is rendered and the photography
  * underneath stays visible. It pauses when off-screen and is skipped entirely
  * for visitors who prefer reduced motion.
  */
-export default function HeroMedia({ src = HERO_VIDEO }: HeroMediaProps) {
+export default function HeroMedia({ src }: HeroMediaProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const reduceMotion = useReducedMotion();
   const inView = useInView(ref);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+
+  const cloudinary = ASSETS.hero.video.trim();
+  const source = src ?? (cloudinary ? videoUrl(cloudinary) : HERO_VIDEO);
 
   useEffect(() => {
     const video = ref.current;
@@ -39,7 +45,7 @@ export default function HeroMedia({ src = HERO_VIDEO }: HeroMediaProps) {
   return (
     <video
       ref={ref}
-      src={src}
+      src={source}
       autoPlay
       muted
       loop

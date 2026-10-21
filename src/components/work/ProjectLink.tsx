@@ -4,6 +4,7 @@ import type { MouseEvent, ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useReducedMotion } from "framer-motion";
+import { imageUrl } from "@/lib/cloudinary";
 import { startProjectTransition } from "./projectTransition";
 
 interface ProjectLinkProps {
@@ -24,7 +25,8 @@ interface ProjectLinkProps {
  * A link to a project page with an opening transition. With neither
  * originSelector nor fromLink the photo wipes up from the bottom.
  * Reduced motion and new-tab clicks (Ctrl, Cmd, Shift, middle button) just
- * navigate normally.
+ * navigate normally. The transition photo is requested at a sensible size so
+ * large Cloudinary originals are not downloaded in full.
  */
 export default function ProjectLink({
   href,
@@ -63,7 +65,7 @@ export default function ProjectLink({
     }
 
     startProjectTransition({
-      image,
+      image: imageUrl(image, 1600),
       focal,
       origin: origin ? origin.getBoundingClientRect() : null,
       onCovered: () => router.push(href),

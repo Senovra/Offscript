@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import Maintenance from "@/components/layout/Maintenance";
 import Header from "@/components/navigation/Header";
 import Preloader from "@/components/home/Preloader";
+import { ASSETS } from "@/lib/assets";
 
 /**
  * MAINTENANCE SWITCH
@@ -39,7 +40,12 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+/** The production address. The workflow also sets NEXT_PUBLIC_SITE_URL to it. */
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://offscript.website";
+
+/** From src/lib/assets.ts. Empty until the real URLs are pasted in. */
+const iconUrl = ASSETS.logo.icon.trim();
+const shareUrl = ASSETS.share.trim();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -49,11 +55,13 @@ export const metadata: Metadata = {
   },
   description:
     "Offscript is a media company: strategy, design, content, campaigns and immersive work.",
+  icons: iconUrl ? { icon: iconUrl } : undefined,
   openGraph: {
     title: "Offscript",
     description:
       "A media company: strategy, design, content, campaigns and immersive work.",
     type: "website",
+    images: shareUrl ? [{ url: shareUrl, width: 1200, height: 630 }] : undefined,
   },
   robots: MAINTENANCE ? { index: false, follow: false } : undefined,
 };

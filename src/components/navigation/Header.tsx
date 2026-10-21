@@ -2,11 +2,13 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
+import Logo from "@/components/ui/Logo";
 import MenuOverlay from "./MenuOverlay";
 
 /**
  * Fixed header. mix-blend-difference keeps it legible over dark surfaces,
- * the light contact section and full-colour photography.
+ * the light contact section and full-colour photography. The logo is the
+ * WHITE version (src/lib/assets.ts); the blend inverts it over light areas.
  *
  * The menu button: the word rolls between "Menu" and "Close", and the two
  * lines (the bottom one shorter) even out on hover and turn into a centred X
@@ -29,9 +31,13 @@ export default function Header() {
             href="/"
             aria-label="Offscript, home"
             onClick={close}
-            className="type-display-wide text-[1rem] md:text-[1.125rem]"
+            className="flex items-center"
           >
-            Offscript
+            <Logo
+              variant="white"
+              className="h-5 w-auto md:h-6"
+              fallbackClassName="type-display-wide text-[1rem] md:text-[1.125rem]"
+            />
           </Link>
 
           <button
