@@ -17,7 +17,7 @@ import { ASSETS } from "@/lib/assets";
  * false : the normal website
  * Change it, save, and restart/redeploy.
  */
-const MAINTENANCE = false;
+const MAINTENANCE = true;
 
 const archivo = Archivo({
   subsets: ["latin"],
