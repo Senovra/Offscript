@@ -320,24 +320,24 @@ export default function Maintenance() {
         initial={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.65, ease: "easeOut" }}
-        className="relative z-10 flex items-center justify-between gap-4 border-b border-[var(--line)] pb-5 md:pb-6"
+        className="relative z-10 flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4 md:pb-6"
       >
-        <div className="flex items-center gap-3">
-          <p className="type-display-wide text-base uppercase tracking-[0.16em] md:text-lg">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <p className="type-display-wide text-sm uppercase tracking-[0.16em] sm:text-base md:text-lg">
             Offscript
           </p>
-          <span className="type-mono rounded-full border border-[#C7A46A]/30 bg-[#C7A46A]/10 px-2.5 py-0.5 text-[0.6rem] text-[#D2B783]">
+          <span className="type-mono rounded-full border border-[#C7A46A]/30 bg-[#C7A46A]/10 px-2 sm:px-2.5 py-0.5 text-[0.55rem] sm:text-[0.6rem] text-[#D2B783]">
             {globalProgress}% COMPLETE
           </span>
         </div>
 
-        <div className="flex flex-col items-end gap-1.5">
-          <div className="type-mono flex items-center gap-2.5 text-[0.6rem] text-fog sm:text-xs">
-            <span className="relative flex h-3 w-3 shrink-0 items-center justify-center">
+        <div className="flex flex-col items-end gap-1">
+          <div className="type-mono flex items-center gap-1.5 sm:gap-2.5 text-[0.55rem] text-fog sm:text-xs">
+            <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 items-center justify-center">
               {!shouldReduceMotion && (
                 <motion.span
                   aria-hidden="true"
-                  className="absolute h-3 w-3 rounded-full border border-[#C7A46A]/60"
+                  className="absolute h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full border border-[#C7A46A]/60"
                   animate={{
                     scale: [0.7, 1.25, 0.7],
                     opacity: [0.8, 0.2, 0.8],
@@ -349,13 +349,14 @@ export default function Maintenance() {
                   }}
                 />
               )}
-              <span className="relative h-1.5 w-1.5 rounded-full bg-[#C7A46A]" />
+              <span className="relative h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-[#C7A46A]" />
             </span>
-            <span>DEVELOPMENT STATUS DASHBOARD</span>
+            <span className="hidden sm:inline">DEVELOPMENT STATUS DASHBOARD</span>
+            <span className="sm:hidden">STATUS DASHBOARD</span>
           </div>
 
           <div
-            className="type-mono flex items-center gap-2 text-[0.55rem] tracking-[0.08em] text-ash sm:text-[0.65rem]"
+            className="type-mono flex items-center gap-1.5 text-[0.5rem] tracking-[0.08em] text-ash sm:text-[0.65rem]"
             aria-label={
               localTime
                 ? `Sri Lanka local time, ${localTime}`
@@ -372,12 +373,12 @@ export default function Maintenance() {
       </motion.header>
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center py-12 md:py-16">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center py-8 sm:py-12 md:py-16">
         {/* Introduction */}
         <section className="flex flex-col items-center text-center">
           <motion.div
             aria-hidden="true"
-            className="text-paper"
+            className="text-paper scale-90 sm:scale-100"
             style={{ transformOrigin: "50% 50%" }}
             animate={
               shouldReduceMotion
@@ -409,7 +410,7 @@ export default function Maintenance() {
             initial={shouldReduceMotion ? undefined : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.1 }}
-            className="type-mono mt-7 text-[0.65rem] tracking-[0.18em] text-[#C7A46A] sm:text-xs"
+            className="type-mono mt-5 sm:mt-7 text-[0.6rem] tracking-[0.16em] text-[#C7A46A] sm:text-xs"
           >
             DEVELOPMENT PROGRESS REPORT
           </motion.p>
@@ -418,7 +419,7 @@ export default function Maintenance() {
             initial={shouldReduceMotion ? undefined : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.18 }}
-            className="type-display-wide mt-4 max-w-3xl text-balance text-[clamp(2rem,5.2vw,4.5rem)] leading-[1.08]"
+            className="type-display-wide mt-3 sm:mt-4 max-w-3xl text-balance text-[clamp(1.75rem,5.2vw,4.5rem)] leading-[1.08]"
           >
             Website Development Status
           </motion.h1>
@@ -427,7 +428,7 @@ export default function Maintenance() {
             initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.28 }}
-            className="type-body mt-5 max-w-xl text-sm leading-7 text-fog sm:text-base"
+            className="type-body mt-4 sm:mt-5 max-w-xl text-xs sm:text-sm md:text-base leading-6 sm:leading-7 text-fog"
           >
             We&rsquo;re continuing to refine the Offscript website, with updates being completed in stages. Here&rsquo;s a look at what&rsquo;s been completed, what&rsquo;s currently underway and what remains before launch.
           </motion.p>
@@ -439,25 +440,25 @@ export default function Maintenance() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.35 }}
           aria-labelledby="development-batches-heading"
-          className="mt-12 md:mt-16"
+          className="mt-8 sm:mt-12 md:mt-16"
         >
-          <div className="mb-3 flex items-center justify-between gap-4">
+          <div className="mb-2.5 sm:mb-3 flex items-center justify-between gap-4">
             <h2
               id="development-batches-heading"
-              className="type-mono text-[0.65rem] tracking-[0.13em] text-ash sm:text-xs"
+              className="type-mono text-[0.6rem] tracking-[0.12em] text-ash sm:text-xs"
             >
               CORE DEVELOPMENT BATCHES (01 — 04)
             </h2>
 
-            <span className="type-mono text-[0.6rem] text-ash sm:text-[0.7rem]">
+            <span className="type-mono text-[0.55rem] text-ash sm:text-[0.7rem]">
               4 BATCHES
             </span>
           </div>
 
-          {/* Streamlined, Premium Build Status Bar with Loading Motion & Reduced Motion Support */}
-          <div className={`mb-4 flex flex-col gap-2 rounded-lg border px-3.5 py-3 ${statusCfg.borderColor} ${statusCfg.bgColor}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
+          {/* Streamlined, Premium Build Status Bar */}
+          <div className={`mb-3 sm:mb-4 flex flex-col gap-1.5 sm:gap-2 rounded-lg border px-3 sm:px-3.5 py-2.5 sm:py-3 ${statusCfg.borderColor} ${statusCfg.bgColor}`}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
                   {statusCfg.isAnimated && !shouldReduceMotion && (
                     <span className="absolute h-3 w-3 rounded-full bg-[#C7A46A]/40 animate-ping" />
@@ -472,22 +473,22 @@ export default function Maintenance() {
                       : { opacity: 1 }
                   }
                   transition={{ duration: 2.5, repeat: shouldReduceMotion ? 0 : Infinity, ease: "easeInOut" }}
-                  className={`type-mono font-semibold tracking-wide text-xs ${statusCfg.textColor} ${statusCfg.glowClass}`}
+                  className={`type-mono font-semibold tracking-wide text-[0.7rem] sm:text-xs ${statusCfg.textColor} ${statusCfg.glowClass}`}
                 >
                   [{statusCfg.label}]
                 </motion.span>
-                <span className="type-mono text-fog text-[0.65rem] truncate hidden sm:inline">
+                <span className="type-mono text-fog text-[0.6rem] sm:text-[0.65rem] truncate hidden sm:inline">
                   — {statusCfg.message}
                 </span>
               </div>
             </div>
 
-            <span className="type-mono text-fog text-[0.65rem] sm:hidden">
+            <span className="type-mono text-fog text-[0.6rem] sm:hidden leading-4">
               {statusCfg.message}
             </span>
 
             {/* True Directional Loading Bar */}
-            <div className="relative h-1 w-full overflow-hidden rounded-full bg-black/50 border border-white/[0.06] mt-1">
+            <div className="relative h-1 w-full overflow-hidden rounded-full bg-black/50 border border-white/[0.06] mt-0.5 sm:mt-1">
               {statusCfg.isAnimated && !shouldReduceMotion ? (
                 <motion.div
                   className={`absolute top-0 bottom-0 w-1/3 rounded-full ${statusCfg.barColor}`}
@@ -506,14 +507,14 @@ export default function Maintenance() {
             </div>
           </div>
 
-          {/* Current Focus Spotlight & Progress Bar with subtle highlight & animated technical ring */}
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          {/* Current Focus Spotlight & Progress Bar */}
+          <div className="mb-3 sm:mb-4 flex flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div
-              className="flex items-center gap-3 flex-1"
+              className="flex items-center gap-2.5 sm:gap-3 flex-1"
               role="status"
               aria-label="Development batches actively progressing"
             >
-              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.12em] text-ash sm:text-[0.65rem]">
+              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.1em] text-ash sm:text-[0.65rem]">
                 OVERALL PROGRESS
               </span>
 
@@ -537,15 +538,14 @@ export default function Maintenance() {
                 </motion.div>
               </div>
 
-              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.1em] text-[#D2B783] sm:text-[0.65rem]">
-                {completedTaskCount} / {allTasks.length} TASKS COMPLETED
+              <span className="type-mono shrink-0 text-[0.55rem] tracking-[0.08em] text-[#D2B783] sm:text-[0.65rem]">
+                {completedTaskCount} / {allTasks.length} TASKS
               </span>
             </div>
 
             {activeBatch && (
-              <div className="type-mono inline-flex items-center gap-2 rounded-lg border border-[#C7A46A]/25 bg-[#C7A46A]/5 px-3 py-1 text-[0.6rem] text-fog">
-                {/* Animated technical activity ring halts if status is halted */}
-                <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+              <div className="type-mono inline-flex items-center gap-2 rounded-lg border border-[#C7A46A]/25 bg-[#C7A46A]/5 px-2.5 py-1 text-[0.58rem] sm:text-[0.6rem] text-fog self-start sm:self-auto">
+                <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
                   {statusCfg.isAnimated && !shouldReduceMotion && (
                     <motion.span
                       aria-hidden="true"
@@ -555,7 +555,7 @@ export default function Maintenance() {
                       style={{ borderTopColor: "transparent" }}
                     />
                   )}
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#C7A46A]" />
+                  <span className="h-1 w-1 shrink-0 rounded-full bg-[#C7A46A]" />
                 </span>
                 <span className="text-ash">CURRENT FOCUS:</span>
                 <span className="text-[#D2B783]">Batch {activeBatch.number} — {activeBatch.name}</span>
@@ -563,8 +563,8 @@ export default function Maintenance() {
             )}
           </div>
 
-          {/* Dynamic Development Update Feed Ticker respecting useReducedMotion */}
-          <div className="mb-5 flex items-center gap-2.5 rounded-md border border-white/[0.06] bg-black/40 px-3 py-2 text-[0.62rem]">
+          {/* Dynamic Development Update Feed Ticker */}
+          <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2.5 rounded-md border border-white/[0.06] bg-black/40 px-3 py-2 text-[0.6rem] sm:text-[0.62rem]">
             <span className={`type-mono shrink-0 font-semibold ${statusCfg.textColor}`}>
               [DEVELOPMENT UPDATE FEED]
             </span>
@@ -575,7 +575,7 @@ export default function Maintenance() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={shouldReduceMotion ? undefined : { opacity: 0, y: -3 }}
                 transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3 }}
-                className="type-mono text-fog truncate"
+                className="type-mono text-fog whitespace-normal break-words sm:truncate leading-4 sm:leading-normal"
               >
                 {statusCfg.logs[logIndex]}
               </motion.span>
@@ -629,24 +629,24 @@ export default function Maintenance() {
                     aria-label={`${isExpanded ? "Collapse" : "Expand"} Batch ${batch.number}: ${batch.name}`}
                     className="block w-full cursor-pointer text-left transition-colors duration-300 hover:bg-white/[0.025] active:bg-white/[0.045] focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#C7A46A]"
                   >
-                    <div className="grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-x-3 px-4 py-4 sm:grid-cols-[2.5rem_minmax(0,1fr)_auto_auto] sm:items-center sm:gap-x-5 sm:px-5 sm:py-5">
-                      <span className={`type-mono col-start-1 row-start-1 pt-0.5 text-xs transition-colors duration-300 ${isActive ? "text-[#C7A46A]" : "text-ash group-hover/row:text-[#C7A46A]"}`}>
+                    <div className="grid grid-cols-[1.75rem_minmax(0,1fr)_auto] gap-x-2.5 px-3.5 py-3.5 sm:grid-cols-[2.5rem_minmax(0,1fr)_auto_auto] sm:items-center sm:gap-x-5 sm:px-5 sm:py-5">
+                      <span className={`type-mono col-start-1 row-start-1 pt-0.5 text-[0.7rem] sm:text-xs transition-colors duration-300 ${isActive ? "text-[#C7A46A]" : "text-ash group-hover/row:text-[#C7A46A]"}`}>
                         {batch.number}
                       </span>
 
                       <div className="col-start-2 row-start-1 min-w-0">
-                        <h3 className={`type-display-wide text-base transition-colors duration-300 sm:text-lg ${isActive ? "text-white" : "text-paper group-hover/row:text-white"}`}>
+                        <h3 className={`type-display-wide text-sm sm:text-base md:text-lg transition-colors duration-300 ${isActive ? "text-white" : "text-paper group-hover/row:text-white"}`}>
                           {batch.name}
                         </h3>
 
-                        <p className="type-body mt-1 text-xs leading-5 text-fog sm:text-sm">
+                        <p className="type-body mt-0.5 sm:mt-1 text-[0.7rem] sm:text-xs md:text-sm leading-4 sm:leading-5 text-fog">
                           {batch.description}
                         </p>
                       </div>
 
                       {/* Status label with percentage badge */}
-                      <div className="col-start-2 row-start-2 mt-3 flex min-w-0 items-center gap-3 sm:col-start-3 sm:row-start-1 sm:mt-0 sm:justify-self-end">
-                        <div className={`flex items-center gap-2 rounded-full border px-2.5 py-0.5 ${statusStyle.badgeBg} ${statusStyle.badgeBorder}`}>
+                      <div className="col-start-2 row-start-2 mt-2 sm:mt-0 flex min-w-0 items-center gap-2 sm:gap-3 sm:col-start-3 sm:row-start-1 sm:justify-self-end">
+                        <div className={`flex items-center gap-1.5 sm:gap-2 rounded-full border px-2 sm:px-2.5 py-0.5 ${statusStyle.badgeBg} ${statusStyle.badgeBorder}`}>
                           {isActive && !shouldReduceMotion ? (
                             <span className="relative flex h-1.5 w-1.5 shrink-0 items-center justify-center">
                               <span className="absolute h-3 w-3 rounded-full bg-[#C7A46A]/40 animate-ping" />
@@ -659,13 +659,13 @@ export default function Maintenance() {
                             />
                           )}
                           <span
-                            className={`type-mono text-[0.62rem] leading-5 sm:text-xs ${statusStyle.text}`}
+                            className={`type-mono text-[0.58rem] sm:text-[0.62rem] md:text-xs leading-4 sm:leading-5 ${statusStyle.text}`}
                           >
                             {batch.status}
                           </span>
                         </div>
 
-                        <span className="type-mono rounded border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 text-[0.58rem] tabular-nums text-ash sm:text-[0.65rem]">
+                        <span className="type-mono rounded border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 text-[0.55rem] sm:text-[0.58rem] md:text-[0.65rem] tabular-nums text-ash">
                           {batchProgress}%
                         </span>
                       </div>
@@ -673,7 +673,7 @@ export default function Maintenance() {
                       {/* Arrow indicator */}
                       <span
                         aria-hidden="true"
-                        className={`col-start-3 row-start-1 flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-full border transition-all duration-300 sm:col-start-4 ${
+                        className={`col-start-3 row-start-1 flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center self-center rounded-full border transition-all duration-300 sm:col-start-4 ${
                           isExpanded
                             ? "border-[#C7A46A]/55 bg-[#C7A46A]/10 text-[#D2B783]"
                             : isActive
@@ -683,8 +683,8 @@ export default function Maintenance() {
                       >
                         <motion.svg
                           viewBox="0 0 16 16"
-                          width="13"
-                          height="13"
+                          width="12"
+                          height="12"
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="1.4"
@@ -724,17 +724,17 @@ export default function Maintenance() {
                         }}
                         className="overflow-hidden"
                       >
-                        <div className="mx-3 mb-4 rounded-lg border border-[#C7A46A]/20 bg-black/25 p-4 sm:mx-5 sm:mb-5 sm:p-5">
-                          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                            <p className="type-mono text-[0.58rem] tracking-[0.13em] text-[#C7A46A] sm:text-[0.65rem]">
+                        <div className="mx-2.5 sm:mx-3 md:mx-5 mb-3 sm:mb-4 md:mb-5 rounded-lg border border-[#C7A46A]/20 bg-black/25 p-3 sm:p-4 md:p-5">
+                          <div className="mb-3 sm:mb-4 flex flex-wrap items-center justify-between gap-2">
+                            <p className="type-mono text-[0.55rem] sm:text-[0.58rem] md:text-[0.65rem] tracking-[0.12em] text-[#C7A46A]">
                               INCLUDED TASKS & COMPLETION STATES
                             </p>
-                            <span className="type-mono text-[0.55rem] text-ash">
+                            <span className="type-mono text-[0.52rem] sm:text-[0.55rem] text-ash">
                               {String(batch.tasks.length).padStart(2, "0")} TASKS
                             </span>
                           </div>
 
-                          <div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
+                          <div className="grid gap-1.5 sm:gap-2 grid-cols-1 sm:grid-cols-2">
                             {batch.tasks.map((task, taskIndex) => {
                               const isCompleted = task.completed;
                               const circumference = 50.26;
@@ -755,10 +755,10 @@ export default function Maintenance() {
                                       ? 0
                                       : taskIndex * 0.025,
                                   }}
-                                  className="flex min-w-0 items-center gap-3 rounded-md border border-white/[0.055] bg-white/[0.025] px-3 py-3 transition-colors duration-200 hover:border-[#C7A46A]/20 hover:bg-white/[0.045]"
+                                  className="flex min-w-0 items-center gap-2.5 sm:gap-3 rounded-md border border-white/[0.055] bg-white/[0.025] px-2.5 sm:px-3 py-2.5 sm:py-3 transition-colors duration-200 hover:border-[#C7A46A]/20 hover:bg-white/[0.045]"
                                 >
-                                  {/* Circular Indicator with smooth draw animation */}
-                                  <div className="relative flex h-4 w-4 shrink-0 items-center justify-center">
+                                  {/* Circular Indicator */}
+                                  <div className="relative flex h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 items-center justify-center">
                                     <svg
                                       viewBox="0 0 20 20"
                                       className="h-full w-full -rotate-90 transform"
@@ -808,16 +808,16 @@ export default function Maintenance() {
 
                                   <span
                                     aria-hidden="true"
-                                    className="type-mono text-[0.6rem] text-[#C7A46A]/80"
+                                    className="type-mono text-[0.55rem] sm:text-[0.6rem] text-[#C7A46A]/80"
                                   >
                                     {String(taskIndex + 1).padStart(2, "0")}
                                   </span>
 
-                                  <span className="type-body min-w-0 flex-1 text-xs leading-5 text-fog sm:text-sm">
+                                  <span className="type-body min-w-0 flex-1 text-[0.7rem] sm:text-xs md:text-sm leading-4 sm:leading-5 text-fog">
                                     {task.name}
                                   </span>
 
-                                  <span className={`type-mono text-[0.55rem] ${isCompleted ? "text-[#C7A46A]" : "text-ash/60"}`}>
+                                  <span className={`type-mono text-[0.52rem] sm:text-[0.55rem] ${isCompleted ? "text-[#C7A46A]" : "text-ash/60"}`}>
                                     {isCompleted ? "DONE" : "PENDING"}
                                   </span>
                                 </motion.div>
@@ -852,44 +852,44 @@ export default function Maintenance() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.45 }}
           aria-labelledby="remaining-launch-heading"
-          className="mt-12 md:mt-16"
+          className="mt-8 sm:mt-12 md:mt-16"
         >
-          <div className="mb-3 flex items-center justify-between gap-4">
+          <div className="mb-2.5 sm:mb-3 flex items-center justify-between gap-4">
             <h2
               id="remaining-launch-heading"
-              className="type-mono text-[0.65rem] tracking-[0.13em] text-ash sm:text-xs"
+              className="type-mono text-[0.6rem] tracking-[0.12em] text-ash sm:text-xs"
             >
               REMAINING BEFORE LAUNCH
             </h2>
 
-            <span className="type-mono text-[0.6rem] text-ash sm:text-[0.7rem]">
+            <span className="type-mono text-[0.55rem] text-ash sm:text-[0.7rem]">
               POST-BATCH TASKS
             </span>
           </div>
 
-          <div className="rounded-xl border border-white/[0.10] bg-white/[0.025] p-5 backdrop-blur-xl">
-            <p className="type-body mb-4 text-xs leading-5 text-fog sm:text-sm">
+          <div className="rounded-xl border border-white/[0.10] bg-white/[0.025] p-3.5 sm:p-5 backdrop-blur-xl">
+            <p className="type-body mb-3 sm:mb-4 text-[0.7rem] sm:text-xs md:text-sm leading-4 sm:leading-5 text-fog">
               The following checklist items follow the completion of the core development batches:
             </p>
 
-            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
+            <div className="grid gap-1.5 sm:gap-2 grid-cols-1 sm:grid-cols-2">
               {REMAINING_LAUNCH_TASKS.map((task, idx) => {
                 const isCompleted = task.completed;
                 return (
                   <div
                     key={task.name}
-                    className="flex items-center gap-3 rounded-md border border-white/[0.055] bg-white/[0.025] px-3 py-3"
+                    className="flex items-center gap-2.5 sm:gap-3 rounded-md border border-white/[0.055] bg-white/[0.025] px-2.5 sm:px-3 py-2.5 sm:py-3"
                   >
-                    <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/15 bg-black/30">
-                      {isCompleted && <span className="h-2 w-2 rounded-full bg-[#C7A46A]" />}
+                    <span className="relative flex h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 items-center justify-center rounded-full border border-white/15 bg-black/30">
+                      {isCompleted && <span className="h-1.5 w-1.5 rounded-full bg-[#C7A46A]" />}
                     </span>
-                    <span className="type-mono text-[0.6rem] text-[#C7A46A]/80">
+                    <span className="type-mono text-[0.55rem] sm:text-[0.6rem] text-[#C7A46A]/80">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
-                    <span className="type-body min-w-0 flex-1 text-xs leading-5 text-fog sm:text-sm">
+                    <span className="type-body min-w-0 flex-1 text-[0.7rem] sm:text-xs md:text-sm leading-4 sm:leading-5 text-fog">
                       {task.name}
                     </span>
-                    <span className={`type-mono text-[0.55rem] ${isCompleted ? "text-[#C7A46A]" : "text-ash/60"}`}>
+                    <span className={`type-mono text-[0.52rem] sm:text-[0.55rem] ${isCompleted ? "text-[#C7A46A]" : "text-ash/60"}`}>
                       {isCompleted ? "DONE" : "PENDING"}
                     </span>
                   </div>
@@ -898,7 +898,7 @@ export default function Maintenance() {
             </div>
           </div>
 
-          <p className="type-body mt-4 w-full text-balance text-xs leading-6 text-ash sm:text-sm">
+          <p className="type-body mt-3 sm:mt-4 w-full text-balance text-[0.7rem] sm:text-xs md:text-sm leading-5 sm:leading-6 text-ash">
             Further refinements, content integration and final checks will continue as the website progresses towards launch.
           </p>
         </motion.section>
@@ -911,9 +911,22 @@ export default function Maintenance() {
         transition={{ duration: 0.7, delay: 0.5 }}
         className="relative z-10 border-t border-[var(--line)] pt-6 md:pt-8"
       >
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {/* 1. Website Development Section (LEFT) */}
-          <div>
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {/* 1. Offscript Enquiries Section (First on Mobile, Left on Laptop/Desktop) */}
+          <div className="order-1 lg:order-1">
+            <p className="type-mono text-[0.65rem] tracking-[0.12em] text-ash">
+              OFFSCRIPT ENQUIRIES
+            </p>
+            <a
+              href="mailto:neveroffscript@gmail.com"
+              className="type-body mt-2 sm:mt-3 inline-block break-all text-xs sm:text-sm text-fog transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
+            >
+              neveroffscript@gmail.com
+            </a>
+          </div>
+
+          {/* 2. Website Development Section (Senovra Logo & Brand Info - Center on Laptop/Desktop) */}
+          <div className="order-2 lg:order-2">
             <p className="type-mono text-[0.65rem] tracking-[0.12em] text-ash">
               WEBSITE DEVELOPMENT
             </p>
@@ -922,12 +935,12 @@ export default function Maintenance() {
               href="https://www.senovra.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group mt-3 inline-flex items-center gap-3 text-sm text-paper transition-colors duration-300 hover:text-[#D2B783] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
+              className="group mt-2.5 inline-flex items-center gap-3 text-xs sm:text-sm text-paper transition-colors duration-300 hover:text-[#D2B783] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
             >
               <img
                 src="https://res.cloudinary.com/css2xcvk/image/upload/v1792555517/Senovra_Official_Logo_Transparent_Background.png"
                 alt="Senovra logo"
-                className="h-10 sm:h-11 w-auto object-contain transition-transform duration-300 group-hover:-translate-y-0.5"
+                className="h-8 sm:h-10 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:-translate-y-0.5"
               />
               <span className="type-body font-medium">Senovra</span>
               <svg
@@ -946,7 +959,7 @@ export default function Maintenance() {
               </svg>
             </a>
 
-            <p className="type-body mt-2 text-sm text-fog">
+            <p className="type-body mt-1.5 text-xs sm:text-sm text-fog">
               Your Vision. Perfected.
             </p>
 
@@ -954,21 +967,21 @@ export default function Maintenance() {
               href="https://www.senovra.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="type-mono mt-2 inline-block break-all text-xs text-ash transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
+              className="type-mono mt-1.5 inline-block break-all text-[0.7rem] sm:text-xs text-ash transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
             >
               www.senovra.com
             </a>
           </div>
 
-          {/* 2. General Enquiries & Support / Senovra Contact Details (MIDDLE) */}
-          <div className="flex flex-col gap-4">
+          {/* 3. Senovra Contact Details (Appears under Logo on Mobile, and on the Right on Laptop/Desktop) */}
+          <div className="order-3 lg:order-3 flex flex-col gap-4">
             <div>
               <p className="type-mono text-[0.65rem] tracking-[0.12em] text-ash">
                 GENERAL ENQUIRIES
               </p>
               <a
                 href="mailto:info@senovra.com"
-                className="type-body mt-1.5 inline-block break-all text-sm text-fog transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
+                className="type-body mt-1.5 inline-block break-all text-xs sm:text-sm text-fog transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
               >
                 info@senovra.com
               </a>
@@ -980,32 +993,19 @@ export default function Maintenance() {
               </p>
               <a
                 href="mailto:support@senovra.com"
-                className="type-body mt-1.5 inline-block break-all text-sm text-fog transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
+                className="type-body mt-1.5 inline-block break-all text-xs sm:text-sm text-fog transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
               >
                 support@senovra.com
               </a>
             </div>
           </div>
-
-          {/* 3. Offscript Enquiries Section (RIGHT) */}
-          <div>
-            <p className="type-mono text-[0.65rem] tracking-[0.12em] text-ash">
-              OFFSCRIPT ENQUIRIES
-            </p>
-            <a
-              href="mailto:neveroffscript@gmail.com"
-              className="type-body mt-3 inline-block break-all text-sm text-fog transition-colors duration-300 hover:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-[#C7A46A]"
-            >
-              neveroffscript@gmail.com
-            </a>
-          </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="type-mono text-[0.65rem] text-ash">
+        <div className="mt-6 sm:mt-8 flex flex-col gap-2.5 sm:gap-3 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="type-mono text-[0.6rem] sm:text-[0.65rem] text-ash">
             © {year} Offscript. All rights reserved.
           </p>
-          <p className="type-mono text-[0.65rem] text-ash">
+          <p className="type-mono text-[0.6rem] sm:text-[0.65rem] text-ash">
             DEVELOPED BY SENOVRA
           </p>
         </div>
