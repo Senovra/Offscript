@@ -11,6 +11,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { CameraBackdrop, CameraReadout } from "./CameraOverlay";
+import { useIntroDone } from "./introState";
 import { assetPath, clamp } from "@/lib/utils";
 
 /**
@@ -25,9 +26,14 @@ const CameraScene = dynamic(() => import("@/three/CameraScene"), { ssr: false })
 /** Same file the camera loads, fetched early so it is already cached. */
 const MODEL_FILE = assetPath("/models/offscript-camera.glb");
 
-/** How long after the page has loaded the downloads start, and the scene mounts. */
-const WARM_DELAY_MS = 800;
-const ARM_DELAY_MS = 2000;
+/**
+ * Timing, counted from the moment the loading screen starts to dissolve:
+ *   WARM : the 3D code and the model file are downloaded quietly
+ *   ARM  : the 3D scene itself is started
+ * Both run in a spare moment of the browser, never while the loader plays.
+ */
+const WARM_DELAY_MS = 1200;
+const ARM_DELAY_MS = 2400;
 
 /** Warm-up runs once per page load, however often the section re-renders. */
 let warmed = false;
@@ -77,13 +83,15 @@ type IdleWindow = Window & {
  * slow turn while the six disciplines appear behind it, one for each sixth of
  * the turn, and a ring marker travels round with it.
  *
- * Loading, so a fast scroll still finds the camera ready:
- *   1. Shortly after the page has loaded, the 3D code and the model file are
- *      downloaded quietly into the cache (nothing is drawn yet).
- *   2. A little later the scene itself is started, in a spare moment.
- *   3. As a safety net it also starts when the section is two screens away.
- *   4. If a visitor still arrives first, a small "Loading camera" label shows
- *      until the camera fades in at the right angle for their scroll position.
+ * Loading, so a fast scroll still finds the camera ready WITHOUT slowing the
+ * loading screen:
+ *   1. Nothing 3D starts while the loader plays.
+ *   2. Once it has dissolved, the 3D code and the model are downloaded in a
+ *      spare moment, and a little later the scene itself is started.
+ *   3. If the visitor scrolls towards the camera first (within one screen of
+ *      it), everything starts at once.
+ *   4. If a visitor still arrives before it is ready, a small "Loading camera"
+ *      label shows until the camera fades in at the right angle.
  * Visitors with Data Saver on only load it when the section is near.
  *
  * Reduced motion: no pinned track, the camera rests in its opening pose.
@@ -92,7 +100,9 @@ type IdleWindow = Window & {
 export default function CameraSection() {
   const trackRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
-  const near = useInView(trackRef, { margin: "200% 0px 200% 0px" });
+  const introDone = useIntroDone();
+  /** Within one screen of the camera section: the visitor is on the way. */
+  const soon = useInView(trackRef, { margin: "100% 0px 100% 0px" });
   const visible = useInView(trackRef, { margin: "0px" });
 
   const [armed, setArmed] = useState(false);
@@ -121,58 +131,43 @@ export default function CameraSection() {
     }
   }, []);
 
-  // Start the scene when near, and also warm up early in the background
+  // Start the 3D scene: never during the loader, and in a spare moment after it
   useEffect(() => {
-    if (webgl !== true) return;
+    if (webgl !== true || !introDone || armed) return;
 
-    if (near) {
+    // On screen, or one screen away: no waiting
+    if (visible || soon) {
       warmDownloads();
       setArmed(true);
       return;
     }
 
+    // Data Saver: wait until the visitor is on the way
     const connection = (
       navigator as Navigator & { connection?: { saveData?: boolean } }
     ).connection;
     if (connection?.saveData) return;
 
     const idleWindow = window as IdleWindow;
-    let warmTimer = 0;
-    let armTimer = 0;
-    let idleHandle = 0;
-    let cancelled = false;
+    const timers: number[] = [];
+    const idles: number[] = [];
 
-    const begin = () => {
-      if (cancelled) return;
-      warmTimer = window.setTimeout(warmDownloads, WARM_DELAY_MS);
-      armTimer = window.setTimeout(() => {
-        if (cancelled) return;
-        if (idleWindow.requestIdleCallback) {
-          idleHandle = idleWindow.requestIdleCallback(() => setArmed(true), {
-            timeout: 2000,
-          });
-        } else {
-          setArmed(true);
-        }
-      }, ARM_DELAY_MS);
-    };
-
-    if (document.readyState === "complete") {
-      begin();
-    } else {
-      window.addEventListener("load", begin, { once: true });
-    }
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener("load", begin);
-      window.clearTimeout(warmTimer);
-      window.clearTimeout(armTimer);
-      if (idleHandle && idleWindow.cancelIdleCallback) {
-        idleWindow.cancelIdleCallback(idleHandle);
+    const whenIdle = (task: () => void) => {
+      if (idleWindow.requestIdleCallback) {
+        idles.push(idleWindow.requestIdleCallback(task, { timeout: 2000 }));
+      } else {
+        task();
       }
     };
-  }, [near, webgl]);
+
+    timers.push(window.setTimeout(() => whenIdle(warmDownloads), WARM_DELAY_MS));
+    timers.push(window.setTimeout(() => whenIdle(() => setArmed(true)), ARM_DELAY_MS));
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      idles.forEach((handle) => idleWindow.cancelIdleCallback?.(handle));
+    };
+  }, [webgl, introDone, visible, soon, armed]);
 
   if (!CAMERA_ENABLED) return null;
 

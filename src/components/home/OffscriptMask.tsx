@@ -36,8 +36,13 @@ const MEASURE_SIZE = 200;
 const LINE_HEIGHT = 0.84;
 /** Approximate cap height of the display font, as a share of its font size. */
 const CAP_HEIGHT = 0.7;
-const HIDDEN_LETTER = { opacity: 0, y: "0.16em" };
-const SHOWN_LETTER = { opacity: 1, y: 0 };
+/**
+ * Letters rise by a share of their own height. Using the same unit for both
+ * ends (percent to percent) means the animation needs no unit conversion,
+ * which would otherwise measure the page when the letters first appear.
+ */
+const HIDDEN_LETTER = { opacity: 0, y: "19%" };
+const SHOWN_LETTER = { opacity: 1, y: "0%" };
 
 /**
  * THE OFFSCRIPT LETTER WINDOW
@@ -49,10 +54,12 @@ const SHOWN_LETTER = { opacity: 1, y: 0 };
  * So the letters are genuine windows into whatever is underneath, whether
  * that is a photograph or a playing video.
  *
- * Sizing: the word is measured with the real font, then scaled uniformly to a
- * share of the width (never stretched). The word always stays on ONE line.
- * On portrait screens it takes more of the width and uses a narrower width
- * setting of the font, so the letters stay as tall as possible.
+ * Sizing: the word is measured ONCE with the real font (the width scales in
+ * direct proportion to the font size), then each resize is plain arithmetic:
+ * no repeated measuring of the page. The word is scaled uniformly to a share
+ * of the width (never stretched) and always stays on one line. On portrait
+ * screens it takes more of the width and uses a narrower width setting of the
+ * font, so the letters stay as tall as possible.
  *
  * `onMeasure` (optional) reports where the finished word sits, so overlays
  * such as the hero viewfinder can follow it. It does not affect the mask.
@@ -90,14 +97,20 @@ export default function OffscriptMask({
     const wrap = wrapRef.current;
     if (!box || !wrap) return;
 
-    let last = "";
+    /** Width of the whole word at MEASURE_SIZE. Measured when the font is ready. */
+    let widthAtMeasure = 0;
+    let lastKey = "";
+    let frame = 0;
 
-    const fit = () => {
+    const measure = () => {
       wrap.style.fontSize = `${MEASURE_SIZE}px`;
-
       const row = wrap.querySelector<HTMLElement>("[data-row]");
-      const widest = row ? row.offsetWidth : 0;
-      if (!row || !widest) return;
+      widthAtMeasure = row ? row.offsetWidth : 0;
+    };
+
+    const apply = () => {
+      const row = wrap.querySelector<HTMLElement>("[data-row]");
+      if (!row || !widthAtMeasure) return;
 
       const styles = getComputedStyle(box);
       const available =
@@ -106,7 +119,7 @@ export default function OffscriptMask({
         parseFloat(styles.paddingRight);
 
       const share = portrait ? 0.94 : 0.8;
-      let size = (MEASURE_SIZE * available * share) / widest;
+      let size = (MEASURE_SIZE * available * share) / widthAtMeasure;
       size = Math.min(size, box.clientHeight * 0.5);
 
       wrap.style.fontSize = `${size}px`;
@@ -114,39 +127,55 @@ export default function OffscriptMask({
       // Report where the finished word sits (layout offsets, so scroll-driven
       // scaling of the overlay does not distort them)
       const report = measureRef.current;
-      if (report) {
-        const capHeight = size * CAP_HEIGHT;
-        const bounds: WordmarkBounds = {
-          x: row.offsetLeft,
-          y: row.offsetTop + row.offsetHeight / 2 - capHeight / 2,
-          width: row.offsetWidth,
-          height: capHeight,
-          stageWidth: box.clientWidth,
-          stageHeight: box.clientHeight,
-        };
-        const key = [
-          bounds.x,
-          bounds.y,
-          bounds.width,
-          bounds.height,
-          bounds.stageWidth,
-          bounds.stageHeight,
-        ]
-          .map((value) => Math.round(value))
-          .join(",");
-        if (key !== last) {
-          last = key;
-          report(bounds);
-        }
+      if (!report) return;
+
+      const capHeight = size * CAP_HEIGHT;
+      const bounds: WordmarkBounds = {
+        x: row.offsetLeft,
+        y: row.offsetTop + row.offsetHeight / 2 - capHeight / 2,
+        width: row.offsetWidth,
+        height: capHeight,
+        stageWidth: box.clientWidth,
+        stageHeight: box.clientHeight,
+      };
+      const key = [
+        bounds.x,
+        bounds.y,
+        bounds.width,
+        bounds.height,
+        bounds.stageWidth,
+        bounds.stageHeight,
+      ]
+        .map((value) => Math.round(value))
+        .join(",");
+      if (key !== lastKey) {
+        lastKey = key;
+        report(bounds);
       }
     };
 
-    fit();
-    const observer = new ResizeObserver(fit);
-    observer.observe(box);
-    document.fonts?.ready.then(fit);
+    measure();
+    apply();
 
-    return () => observer.disconnect();
+    // The font may arrive after the first measurement: measure again once it has
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (cancelled) return;
+      measure();
+      apply();
+    });
+
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(apply);
+    });
+    observer.observe(box);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, [portrait]);
 
   const visible = !sequence || play;
@@ -191,7 +220,7 @@ export default function OffscriptMask({
                   initial={sequence ? HIDDEN_LETTER : false}
                   animate={visible ? SHOWN_LETTER : HIDDEN_LETTER}
                   transition={{
-                    duration: 0.8,
+                    duration: 0.9,
                     ease: EASE_PUSH,
                     delay: visible && sequence ? letterDelay + letterIndex * letterStep : 0,
                   }}

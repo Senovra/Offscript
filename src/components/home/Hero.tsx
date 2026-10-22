@@ -11,6 +11,7 @@ import {
 import OffscriptMask, { type WordmarkBounds } from "./OffscriptMask";
 import HeroMedia from "./HeroMedia";
 import HeroViewfinder from "./HeroViewfinder";
+import { useIntroDone } from "./introState";
 import { heroFrames } from "@/lib/projects";
 import { clamp } from "@/lib/utils";
 
@@ -31,10 +32,16 @@ const SHOWN = "inset(0% 0% 0% 0%)";
  *
  * It starts in exactly the state the loader ends in, so the intro and the
  * hero read as one shot. The viewfinder follows the measured wordmark.
+ *
+ * While the loading screen plays, only the first photograph and the letter
+ * window are live. The hero's own video, the second and third photographs and
+ * the viewfinder start once the loader begins to dissolve (see introState),
+ * so they do not compete with it for the network and the processor.
  */
 export default function Hero() {
   const trackRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
+  const introDone = useIntroDone();
   const [bounds, setBounds] = useState<WordmarkBounds | null>(null);
 
   const { scrollYProgress } = useScroll({
@@ -84,28 +91,30 @@ export default function Hero() {
                 : { scale: mediaScale, x: mediaX }
             }
           >
-            {heroFrames.map((frame, index) => (
-              <motion.div
-                key={frame.src}
-                className="absolute inset-0"
-                style={frameStyles[index]}
-              >
-                <Image
-                  src={frame.src}
-                  alt=""
-                  fill
-                  sizes="100vw"
-                  priority={index === 0}
-                  className="object-cover"
-                />
-              </motion.div>
-            ))}
-            <HeroMedia />
+            {heroFrames.map((frame, index) =>
+              index === 0 || introDone ? (
+                <motion.div
+                  key={frame.src}
+                  className="absolute inset-0"
+                  style={frameStyles[index]}
+                >
+                  <Image
+                    src={frame.src}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    priority={index === 0}
+                    className="object-cover"
+                  />
+                </motion.div>
+              ) : null
+            )}
+            {introDone && <HeroMedia />}
           </motion.div>
         </OffscriptMask>
 
         {/* Camera viewfinder: follows the wordmark, fades out as you scroll */}
-        <HeroViewfinder bounds={bounds} progress={scrollYProgress} />
+        {introDone && <HeroViewfinder bounds={bounds} progress={scrollYProgress} />}
 
         {/* Settles into the camera scene's studio tone */}
         {!reduceMotion && (

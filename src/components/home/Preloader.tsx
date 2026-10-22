@@ -2,10 +2,44 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { preconnect } from "react-dom";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+} from "framer-motion";
 import OffscriptMask from "./OffscriptMask";
 import HeroMedia from "./HeroMedia";
+import { markIntroDone } from "./introState";
+import { ASSETS } from "@/lib/assets";
 import { heroFrames } from "@/lib/projects";
+import { EASE_PUSH } from "@/lib/utils";
+
+/** The letters start a little larger and settle to the hero's size by the end. */
+const START_SCALE = 1.1;
+const SETTLE_SECONDS = 2.3;
+const HOLD_MS = 2400;
+const HOLD_MS_REDUCED = 900;
+
+/** The sites the opening photo and video come from, so connections open early. */
+function originOf(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol.startsWith("http") ? parsed.origin : null;
+  } catch {
+    return null;
+  }
+}
+
+const PRECONNECT_ORIGINS = Array.from(
+  new Set(
+    [heroFrames[0]?.src ?? "", ASSETS.hero.video.trim()]
+      .map(originOf)
+      .filter((origin): origin is string => origin !== null)
+  )
+);
 
 /**
  * INTRO
@@ -15,14 +49,23 @@ import { heroFrames } from "@/lib/projects";
  * moving between Home, Work, Services, About or Contact.
  *
  * Sequence: wait for the first image, letters arrive one by one with media
- * visible inside them, a short hold, then the screen dissolves into the hero,
- * which uses the identical mask and media position.
+ * visible inside them while they settle from slightly larger to the hero's
+ * size, a short hold, then the screen dissolves into the hero, which uses the
+ * identical mask and media position.
+ *
+ * While it plays, nothing heavy runs behind it: when it starts to dissolve it
+ * reports in (introState), and only then do the hero's own video, the camera
+ * frame and the 3D camera start their work.
  */
 export default function Preloader() {
   const [visible, setVisible] = useState(true);
   const [ready, setReady] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const reduceMotion = useReducedMotion();
+  const settle = useMotionValue(START_SCALE);
+
+  // Open connections to the photo and video hosts as early as possible
+  PRECONNECT_ORIGINS.forEach((origin) => preconnect(origin));
 
   // Start at the top and lock scroll while the intro plays
   useEffect(() => {
@@ -42,14 +85,24 @@ export default function Preloader() {
     return () => window.clearTimeout(fallback);
   }, []);
 
-  // Hold, then release
+  // The letters settle from slightly larger to the hero's size
+  useEffect(() => {
+    if (!ready || reduceMotion) return;
+    const controls = animate(settle, 1, { duration: SETTLE_SECONDS, ease: EASE_PUSH });
+    return () => controls.stop();
+  }, [ready, reduceMotion, settle]);
+
+  // Hold, then release: tell the rest of the page, then dissolve
   useEffect(() => {
     if (!ready) return;
-    const hold = reduceMotion ? 900 : 2400;
-    const timer = window.setTimeout(() => {
-      document.documentElement.style.overflow = "";
-      setVisible(false);
-    }, hold);
+    const timer = window.setTimeout(
+      () => {
+        document.documentElement.style.overflow = "";
+        markIntroDone();
+        setVisible(false);
+      },
+      reduceMotion ? HOLD_MS_REDUCED : HOLD_MS
+    );
     return () => window.clearTimeout(timer);
   }, [ready, reduceMotion]);
 
@@ -62,10 +115,15 @@ export default function Preloader() {
           aria-label="Loading Offscript"
           data-lenis-prevent
           className="fixed inset-0 z-[100] h-svh bg-ink"
+          style={{ willChange: "opacity" }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: "easeInOut" }}
+          transition={{ duration: reduceMotion ? 0.4 : 1.1, ease: [0.4, 0, 0.2, 1] }}
         >
-          <OffscriptMask sequence={!reduceMotion} play={ready}>
+          <OffscriptMask
+            sequence={!reduceMotion}
+            play={ready}
+            overlayScale={reduceMotion ? undefined : settle}
+          >
             {/* Same structure and end position as the hero media */}
             <motion.div
               className="absolute inset-[-6%]"
