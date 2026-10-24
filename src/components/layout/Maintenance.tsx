@@ -22,7 +22,7 @@ type BatchItem = {
 // ==========================================
 
 // Easily change build status here in code: "active" | "halted" | "standby" | "deploy"
-const CURRENT_BUILD_STATUS: "active" | "halted" | "standby" | "deploy" = "deploy";
+const CURRENT_BUILD_STATUS: "active" | "halted" | "standby" | "deploy" = "halted";
 
 const BUILD_STATUS_CONFIG = {
   active: {
