@@ -22,7 +22,7 @@ type BatchItem = {
 // ==========================================
 
 // Easily change build status here in code: "active" | "halted" | "standby" | "deploy"
-const CURRENT_BUILD_STATUS: "active" | "halted" | "standby" | "deploy" = "active";
+const CURRENT_BUILD_STATUS: "active" | "halted" | "standby" | "deploy" = "deploy";
 
 const BUILD_STATUS_CONFIG = {
   active: {
@@ -127,8 +127,8 @@ const DEVELOPMENT_BATCHES: BatchItem[] = [
       { name: "Responsive image fitting across Work reel, project heroes, next project band, Capabilities section and project open transition", completed: true },
       { name: "Improve mobile layouts where landscape images are excessively zoomed or cropped", completed: true },
       { name: "Review image delivery settings for unnecessary quality loss", completed: true},
-      { name: "Configure each project's additional gallery images separately from its hero image", completed: false },
-      { name: "Preserve existing asset URLs and confirmed project specific image assignments", completed: false },
+      { name: "Configure each project's additional gallery images separately from its hero image", completed: true },
+      { name: "Preserve existing asset URLs and confirmed project specific image assignments", completed: true },
     ],
   },
   {
