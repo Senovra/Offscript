@@ -7,7 +7,7 @@ import Link from "next/link";
  */
 export default function Contact() {
   return (
-    <section aria-label="Contact" className="bg-paper text-ink">
+    <section aria-label="Contact" data-header-theme="light" className="bg-paper text-ink">
       <Link
         href="/contact"
         aria-label="Start a project: go to the contact page"

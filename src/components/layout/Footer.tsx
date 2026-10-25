@@ -71,6 +71,23 @@ function PinIcon() {
   );
 }
 
+function MailIcon() {
+  return (
+    <svg {...ICON_PROPS} width={16} height={16}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg {...ICON_PROPS} width={16} height={16}>
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
 /** Shared square icon button: fills on hover, press and while open. */
 const BOX_CLASS =
   "group/social relative flex h-11 w-11 items-center justify-center overflow-hidden border border-paper/25 text-fog transition-colors duration-500 hover:text-ink active:text-ink focus-visible:text-ink";
@@ -326,7 +343,7 @@ export default function Footer() {
           <div className="md:col-span-6">
             <Logo
               variant="black"
-              className="h-14 w-14 md:h-16 md:w-16"
+              className="h-20 w-20 md:h-28 md:w-28"
               fallbackClassName="type-display-wide size-lg"
             />
             <p className="mt-5 max-w-[32ch] text-fog">{TAGLINE}</p>
@@ -381,26 +398,34 @@ export default function Footer() {
               </div>
 
               <ul className="mt-6 space-y-1 text-[0.9375rem] text-fog">
-                <li>
-                  <a href={`mailto:${CONTACT.email}`} className={contactLink}>
-                    {CONTACT.email}
-                  </a>
-                </li>
-                {CONTACT.phones.map((phone) => (
-                  <li key={phone.tel}>
-                    <a href={`tel:${phone.tel}`} className={contactLink}>
-                      {phone.display}
-                    </a>
-                    <span className="type-mono ml-2 text-ash">{phone.label}</span>
-                  </li>
-                ))}
-                <li className="flex items-start gap-2 pt-1">
-                  <span className="mt-0.5 shrink-0 text-ash">
-                    <PinIcon />
-                  </span>
-                  <span>{CONTACT.location}</span>
-                </li>
-              </ul>
+  <li className="flex items-start gap-2.5">
+    <span aria-hidden="true" className="mt-[0.45rem] shrink-0 text-ash">
+      <MailIcon />
+    </span>
+    <a href={`mailto:${CONTACT.email}`} className={contactLink}>
+      {CONTACT.email}
+    </a>
+  </li>
+  {CONTACT.phones.map((phone) => (
+    <li key={phone.tel} className="flex items-start gap-2.5">
+      <span aria-hidden="true" className="mt-[0.45rem] shrink-0 text-ash">
+        <PhoneIcon />
+      </span>
+      <span className="py-1">
+        <a href={`tel:${phone.tel}`} className="transition-colors duration-300 hover:text-paper focus-visible:text-paper active:text-paper">
+          {phone.display}
+        </a>
+        <span className="type-mono ml-2 text-ash">{phone.label}</span>
+      </span>
+    </li>
+  ))}
+  <li className="flex items-start gap-2.5">
+    <span aria-hidden="true" className="mt-[0.45rem] shrink-0 text-ash">
+      <PinIcon />
+    </span>
+    <span className="py-1">{CONTACT.location}</span>
+  </li>
+</ul>
             </div>
           </div>
         </div>

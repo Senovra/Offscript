@@ -10,24 +10,24 @@ const SENOVRA_LOGO =
  */
 export default function SenovraCredit({ className = "" }: { className?: string }) {
   return (
-    <p className={`type-mono inline-flex items-center gap-2 text-ash ${className}`}>
+    <p className={`type-mono inline-flex items-center gap-2.5 text-ash ${className}`}>
       <span>Made and developed by</span>
       <a
         href={SENOVRA_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Senovra (opens in a new tab)"
-        className="-m-2 inline-flex items-center justify-center p-2 opacity-80 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100 active:opacity-100"
+        className="-m-1.5 inline-flex items-center justify-center p-1.5 opacity-90 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100 active:opacity-100"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={imageUrl(SENOVRA_LOGO, 96)}
+          src={imageUrl(SENOVRA_LOGO, 160)}
           alt="Senovra"
-          width={20}
-          height={20}
+          width={28}
+          height={28}
           loading="lazy"
           decoding="async"
-          className="h-5 w-5 object-contain"
+          className="h-10 w-10 object-contain"
         />
       </a>
     </p>

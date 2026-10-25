@@ -258,12 +258,17 @@ export const aboutImages = ASSETS.about.map((image) => ({
    -------------------------------------------------------------------------- */
 export const aboutCopy = {
   who: [
-    "Offscript is a marketing agency that strongly believes that good ideas fail without clarity. Where’s that clarity found? In the core image that a brand displays. Offscript helps businesses, organizations and individuals find their clarity, using a strategy founded by the core members, to display brand images in a unique and bound-to-succeed method. With a strong portfolio that ranges from photography, videography, editing and graphics & design up to social media management, Offscript is now available in Bangladesh and Sri Lanka.",
+    "Offscript is a marketing agency that strongly believes that good ideas fail without clarity. Where’s that clarity found? In the core image that a brand displays.",
+    "Offscript helps businesses, organizations and individuals find their clarity, using a strategy founded by the core members, to display brand images in a unique and bound-to-succeed method.",
+    "With a strong portfolio that ranges from photography, videography, editing and graphics & design up to social media management, Offscript is now available in Bangladesh and Sri Lanka.",
   ],
   how: [
     "Everything Offscript does is personalized, allocating time for each client and having that 1:1 contact at all times, ensuring Offscript’s brand image optimization strategy. Offscript’s standard approach to personalized enhancements looks like this:",
-    "Firstly, a client reaches out to us, and we set up a meeting with one of our members to organize and truly understand the underlying problems and solutions. Furthermore, the idea is taken away from the client and is pitched to an allocated scriptwriter, who not only decides what to do moving forward, but also passes the concept on to our main implementors, whether it’s a photographer to fill the void of lack in images displayed as a brand, an editor to enhance graphics & design or video quality of already produced content, or even a manager who manages social media, runs ads and optimizes the brand to viewer image. After all internal discussions are laid out, and a strategy is decided, it is pitched back once more to the client. Only after the client’s approval is this strategy implemented.",
-    "Why is Offscript special as a media agency? Offscript provides not only the highest quality services, but also the lowest rates. Having been around for a year now, Offscript has received major personal praise for being budget-friendly and for a not-so-equivalent quality of output, with clients describing Offscript’s work as ‘Completely out of our expectations.’",
+    "Firstly, a client reaches out to us, and we set up a meeting with one of our members to organize and truly understand the underlying problems and solutions.",
+    "Furthermore, the idea is taken away from the client and is pitched to an allocated scriptwriter, who not only decides what to do moving forward, but also passes the concept on to our main implementors, whether it’s a photographer to fill the void of lack in images displayed as a brand, an editor to enhance graphics & design or video quality of already produced content, or even a manager who manages social media, runs ads and optimizes the brand to viewer image.",
+    "After all internal discussions are laid out, and a strategy is decided, it is pitched back once more to the client. Only after the client’s approval is this strategy implemented.",
+    "Why is Offscript special as a media agency?",
+    "Offscript provides not only the highest quality services, but also the lowest rates. Having been around for a year now, Offscript has received major personal praise for being budget-friendly and for a not-so-equivalent quality of output, with clients describing Offscript’s work as ‘Completely out of our expectations.’",
   ],
   withLead: "Anyone that wants to be known.",
   withText:

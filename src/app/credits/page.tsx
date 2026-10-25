@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import PageHeader from "@/components/ui/PageHeader";
-import { heroFrames, modelCredit } from "@/lib/projects";
+import { modelCredit } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Credits",
@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 
 const linkClass = "border-b border-current pb-0.5 transition-colors hover:text-fog";
 
-/** The opening of the home page still uses temporary stock photography. */
-const usesStockPhotography = heroFrames.some((frame) =>
-  frame.src.includes("images.unsplash.com")
-);
 
 export default function CreditsPage() {
   const rows: Array<{ label: string; value: ReactNode }> = [
@@ -33,7 +29,7 @@ export default function CreditsPage() {
       <PageHeader
         eyebrow="Legal"
         title="Credits"
-        intro="Third-party assets used on this website, and the licences they are shared under."
+        intro="Third-party assets used on this website and the licences they are shared under."
       />
 
       <div className="page-gutter pb-28">
@@ -100,17 +96,7 @@ export default function CreditsPage() {
           endorsed by Sony.
         </p>
 
-        {usesStockPhotography && (
-          <>
-            <h2 className="type-mono mb-6 mt-20 text-paper">Temporary photography</h2>
-            <p className="type-body max-w-[64ch] text-fog">
-              The photographs inside the OFFSCRIPT letters on the home page are
-              temporary stock material from Unsplash, used until Offscript
-              supplies its own. They do not represent Offscript work and will be
-              replaced.
-            </p>
-          </>
-        )}
+        
       </div>
     </>
   );

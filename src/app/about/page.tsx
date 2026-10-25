@@ -20,6 +20,31 @@ function Heading({ text }: { text: string }) {
   );
 }
 
+/**
+ * The client's paragraphs, unchanged. A paragraph that is a question is set as
+ * a short lead-in line, so the text that follows reads as its answer.
+ */
+function Paragraphs({ items }: { items: string[] }) {
+  return (
+    <>
+      {items.map((paragraph) =>
+        paragraph.endsWith("?") ? (
+          <p
+            key={paragraph}
+            className="type-editorial max-w-[30ch] pt-6 text-[clamp(1.375rem,2.4vw,2rem)] leading-[1.15] text-paper"
+          >
+            {paragraph}
+          </p>
+        ) : (
+          <p key={paragraph} className="max-w-[60ch]">
+            {paragraph}
+          </p>
+        )
+      )}
+    </>
+  );
+}
+
 interface BlockProps {
   index: string;
   title: string;
@@ -39,7 +64,7 @@ function Block({ index, title, children }: BlockProps) {
         </div>
       </div>
 
-      <div className="space-y-5 text-[1.0625rem] leading-relaxed text-fog md:col-span-7 md:text-lg">
+      <div className="space-y-6 text-[1.0625rem] leading-[1.75] text-fog md:col-span-7 md:space-y-7 md:text-[1.1875rem]">
         {children}
       </div>
     </section>
@@ -63,11 +88,7 @@ export default function AboutPage() {
       <div className="bg-graphite py-12 md:py-20">
         <div className="page-gutter">
           <Block index="01" title="Who We Are?">
-            {aboutCopy.who.map((paragraph) => (
-              <p key={paragraph} className="max-w-[62ch]">
-                {paragraph}
-              </p>
-            ))}
+            <Paragraphs items={aboutCopy.who} />
           </Block>
 
           {/* Behind the scenes: each photo keeps its own shape */}
@@ -85,18 +106,14 @@ export default function AboutPage() {
           </div>
 
           <Block index="02" title="How We Work?">
-            {aboutCopy.how.map((paragraph) => (
-              <p key={paragraph} className="max-w-[62ch]">
-                {paragraph}
-              </p>
-            ))}
+            <Paragraphs items={aboutCopy.how} />
           </Block>
 
           <Block index="03" title="Who We Work With?">
             <p className="type-editorial size-lg max-w-[20ch] text-paper">
               {aboutCopy.withLead}
             </p>
-            <p className="max-w-[62ch]">{aboutCopy.withText}</p>
+            <p className="max-w-[60ch]">{aboutCopy.withText}</p>
           </Block>
         </div>
       </div>

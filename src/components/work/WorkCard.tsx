@@ -19,26 +19,39 @@ interface WorkCardProps {
   index: number;
 }
 
+/** Space the cursor tag needs on the right before it flips to the left of the cursor (px). */
+const TAG_ROOM = 120;
+
+/** The small "View →" tag: a thin border, mono type, a dark fill. No blur. */
+const TAG_CLASS =
+  "type-mono inline-flex h-8 items-center gap-2 whitespace-nowrap border border-paper/40 bg-ink/80 px-3 text-[0.625rem] tracking-[0.12em] text-paper";
+
 /**
  * One project on the Work page. The photo has gentle scroll parallax, opens
- * like a window as it scrolls into view, and zooms a little on hover. On mouse
- * devices a "View" circle follows the pointer. Clicking opens the project with
- * the page transition.
+ * like a window as it scrolls into view, and zooms a little on hover.
  *
- * The frame is 4:3 on phones and 16:9 from tablets up. A photo that fits the
- * frame fills it; one that would be cropped too much is shown whole over a
- * soft backdrop (see FitImage), so landscape photos are no longer a thin slice
- * on a phone.
+ * "View" affordance:
+ *   Mouse    : a small tag follows the cursor, flipping to its left near the edge.
+ *   Touch    : the same tag sits quietly in the photo's corner.
+ *   Keyboard : the corner tag appears when the card has focus.
+ * Clicking opens the project with the page transition.
+ *
+ * The frame is 4:3 on phones and 16:9 from tablets up (see FitImage for how
+ * photos fit it).
  */
 export default function WorkCard({ project, index }: WorkCardProps) {
   const reduceMotion = useReducedMotion();
   const mediaRef = useRef<HTMLDivElement>(null);
   const [hovering, setHovering] = useState(false);
+  const [flip, setFlip] = useState(false);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const followX = useSpring(x, { stiffness: 260, damping: 28, mass: 0.4 });
-  const followY = useSpring(y, { stiffness: 260, damping: 28, mass: 0.4 });
+  const springX = useSpring(x, { stiffness: 260, damping: 28, mass: 0.4 });
+  const springY = useSpring(y, { stiffness: 260, damping: 28, mass: 0.4 });
+  // With reduced motion the tag simply sits at the cursor, with no easing
+  const tagX = reduceMotion ? x : springX;
+  const tagY = reduceMotion ? y : springY;
 
   const { scrollYProgress } = useScroll({
     target: mediaRef,
@@ -49,8 +62,10 @@ export default function WorkCard({ project, index }: WorkCardProps) {
   const onMove = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "mouse" || !mediaRef.current) return;
     const rect = mediaRef.current.getBoundingClientRect();
-    x.set(event.clientX - rect.left);
+    const px = event.clientX - rect.left;
+    x.set(px);
     y.set(event.clientY - rect.top);
+    setFlip(px > rect.width - TAG_ROOM);
   };
 
   return (
@@ -100,20 +115,28 @@ export default function WorkCard({ project, index }: WorkCardProps) {
             </span>
           )}
 
-          {/* "View" circle that follows the mouse (mouse devices only) */}
+          {/* Mouse: a small tag that follows the cursor */}
           <motion.div
             aria-hidden="true"
             className="pointer-events-none absolute left-0 top-0 z-10"
-            style={{ x: followX, y: followY }}
+            style={{ x: tagX, y: tagY }}
           >
             <span
-              className={`type-mono flex h-[5.5rem] w-[5.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-paper text-ink transition-all duration-300 ${
-                hovering ? "scale-100 opacity-100" : "scale-50 opacity-0"
-              }`}
+              className={`${TAG_CLASS} mt-4 transition-opacity duration-300 ${
+                flip ? "-ml-4 -translate-x-full" : "ml-4"
+              } ${hovering ? "opacity-100" : "opacity-0"}`}
             >
-              View
+              View <span>→</span>
             </span>
           </motion.div>
+
+          {/* Touch and keyboard: the same tag, resting in the corner */}
+          <span
+            aria-hidden="true"
+            className={`${TAG_CLASS} pointer-events-none absolute bottom-3 right-3 z-10 opacity-0 transition-opacity duration-300 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100`}
+          >
+            View <span>→</span>
+          </span>
         </motion.div>
 
         <div className="mt-5 flex items-end justify-between gap-6">
