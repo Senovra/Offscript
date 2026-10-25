@@ -15,9 +15,9 @@ import { ASSETS } from "@/lib/assets";
  * true  : every page shows the maintenance screen (and search engines are told
  *         not to index it)
  * false : the normal website
- * Change it, save and restart/redeploy.
+ * Change it, save, and restart/redeploy.
  */
-const MAINTENANCE = true;
+const MAINTENANCE = false;
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -40,12 +40,23 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-/** The production address. The workflow also sets NEXT_PUBLIC_SITE_URL to it. */
+/** The production address. The deploy workflow also sets NEXT_PUBLIC_SITE_URL to it. */
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://offscript.website";
 
-/** From src/lib/assets.ts. Empty until the real URLs are pasted in. */
+/** In the words of Offscript's own About copy. */
+const DESCRIPTION =
+  "Offscript is a marketing agency in Bangladesh and Sri Lanka: photography, videography, editing, graphics & design and social media management.";
+
+/** From src/lib/assets.ts. */
 const iconUrl = ASSETS.logo.icon.trim();
 const shareUrl = ASSETS.share.trim();
+
+/**
+ * The current sharing image is a SQUARE 512 x 512 icon. Once a dedicated
+ * landscape image (about 1200 x 630) is in ASSETS.share, set this to true so
+ * the cards use the large format.
+ */
+const SHARE_IS_LANDSCAPE = false;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -53,15 +64,30 @@ export const metadata: Metadata = {
     default: "Offscript",
     template: "%s | Offscript",
   },
-  description:
-    "Offscript is a media company: strategy, design, content, campaigns and immersive work.",
-  icons: iconUrl ? { icon: iconUrl } : undefined,
+  description: DESCRIPTION,
+  icons: iconUrl ? { icon: iconUrl, apple: iconUrl } : undefined,
   openGraph: {
     title: "Offscript",
-    description:
-      "A media company: strategy, design, content, campaigns and immersive work.",
+    description: DESCRIPTION,
+    url: siteUrl,
+    siteName: "Offscript",
     type: "website",
-    images: shareUrl ? [{ url: shareUrl, width: 1200, height: 630 }] : undefined,
+    images: shareUrl
+      ? [
+          {
+            url: shareUrl,
+            width: SHARE_IS_LANDSCAPE ? 1200 : 512,
+            height: SHARE_IS_LANDSCAPE ? 630 : 512,
+            alt: "Offscript",
+          },
+        ]
+      : undefined,
+  },
+  twitter: {
+    card: SHARE_IS_LANDSCAPE ? "summary_large_image" : "summary",
+    title: "Offscript",
+    description: DESCRIPTION,
+    images: shareUrl ? [shareUrl] : undefined,
   },
   robots: MAINTENANCE ? { index: false, follow: false } : undefined,
 };

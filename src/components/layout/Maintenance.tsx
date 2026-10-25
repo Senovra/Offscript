@@ -135,8 +135,8 @@ const DEVELOPMENT_BATCHES: BatchItem[] = [
     number: "04",
     name: "Branding, Contact & Final Page Refinements",
     description: "Contact page selectors, metadata, 404 views and final checks.",
-    status: "In progress",
-    state: "active",
+    status: "Completed and deployed",
+    state: "completed",
     tasks: [
       { name: "Contact page and WhatsApp selector refinements", completed: true },
       { name: "Footer and Senovra credit", completed: true },

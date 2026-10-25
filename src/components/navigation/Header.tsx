@@ -6,9 +6,9 @@ import Logo from "@/components/ui/Logo";
 import MenuOverlay from "./MenuOverlay";
 
 /**
- * Fixed header. mix-blend-difference keeps it legible over dark surfaces,
- * the light contact section and full-colour photography. The logo is the
- * WHITE version (src/lib/assets.ts); the blend inverts it over light areas.
+ * Fixed header. The Menu button uses mix-blend-difference so it stays legible
+ * over dark surfaces, the light contact section and full-colour photography.
+ * The logo sits OUTSIDE that blend so its artwork is never recoloured.
  *
  * The menu button: the word rolls between "Menu" and "Close", and the two
  * lines (the bottom one shorter) even out on hover and turn into a centred X
@@ -25,7 +25,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[80] pt-[env(safe-area-inset-top,0px)] text-paper mix-blend-difference">
+      <header className="fixed inset-x-0 top-0 z-[80] pt-[env(safe-area-inset-top,0px)] text-paper">
         <div className="page-gutter flex h-[var(--header-h)] items-center justify-between">
           <Link
             href="/"
@@ -34,9 +34,10 @@ export default function Header() {
             className="flex items-center"
           >
             <Logo
-              variant="white"
-              className="h-5 w-auto md:h-6"
-              fallbackClassName="type-display-wide text-[1rem] md:text-[1.125rem]"
+              variant="black"
+              alt=""
+              className="h-9 w-9 md:h-10 md:w-10"
+              fallbackClassName="type-display-wide text-[1rem] mix-blend-difference md:text-[1.125rem]"
             />
           </Link>
 
@@ -46,7 +47,7 @@ export default function Header() {
             aria-expanded={open}
             aria-controls="site-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="group/menu type-mono -mr-3 flex h-12 items-center gap-3.5 px-3"
+            className="group/menu type-mono -mr-3 flex h-12 items-center gap-3.5 px-3 mix-blend-difference"
           >
             {/* Rolling label */}
             <span

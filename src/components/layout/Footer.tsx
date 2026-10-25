@@ -4,28 +4,24 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Logo from "@/components/ui/Logo";
+import SenovraCredit from "@/components/ui/SenovraCredit";
+import {
+  CONTACT,
+  INSTAGRAM_ACCOUNTS,
+  WHATSAPP_OPTIONS,
+  whatsappUrl,
+} from "@/lib/contact";
 import { legalLinks, navLinks } from "@/lib/projects";
 
-/**
- * PLACEHOLDER LINKS: replace with Offscript's real details.
- *   FACEBOOK_URL : TEMPORARILY the Facebook homepage. Replace with the full
- *                  address of Offscript's own page.
- *   WHATSAPP_URL : https://wa.me/ followed by the number, digits only, with the
- *                  country code (for example https://wa.me/15551234567)
- */
-const FACEBOOK_URL = "https://www.facebook.com/";
-const WHATSAPP_URL = "https://wa.me/";
+/** The brand tagline, exactly as supplied by Offscript. */
+const TAGLINE = "Where vision, meets quality.";
 
-/** Confirmed Instagram accounts, main account first. */
-const INSTAGRAM_ACCOUNTS = [
-  { handle: "offscript_co", detail: "Bangladesh · Main", spoken: "Bangladesh, main account" },
-  { handle: "offscript_co_lk", detail: "Sri Lanka · Branch", spoken: "Sri Lanka, branch" },
-  {
-    handle: "offscript_co_automotive",
-    detail: "Automotive · Sub-branch",
-    spoken: "Automotive, sub-branch",
-  },
-];
+/**
+ * FACEBOOK: no Facebook page address has been supplied. Paste the full address
+ * of Offscript's page here (for example https://www.facebook.com/their-page)
+ * and the icon appears. While it is empty, nothing is shown.
+ */
+const FACEBOOK_URL = "";
 
 const ICON_PROPS = {
   viewBox: "0 0 24 24",
@@ -62,6 +58,15 @@ function WhatsAppIcon() {
     <svg {...ICON_PROPS}>
       <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
       <path d="M9 8.5c0 3.5 2.5 6 6 6.5l1.5-1.5-2-1-1 .8c-1-.4-2-1.4-2.4-2.4l.8-1-1-2L9 8.5z" />
+    </svg>
+  );
+}
+
+function PinIcon() {
+  return (
+    <svg {...ICON_PROPS} width={16} height={16}>
+      <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
     </svg>
   );
 }
@@ -103,7 +108,7 @@ function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-/** A plain external icon link (Facebook and WhatsApp). */
+/** A plain external icon link (Facebook, once it has an address). */
 function SocialLink({
   label,
   href,
@@ -127,15 +132,33 @@ function SocialLink({
   );
 }
 
+interface MenuItem {
+  key: string;
+  title: string;
+  detail: string;
+  href: string;
+  label: string;
+}
+
 /**
- * Instagram: one icon that reveals the three accounts.
- *   Mouse  : hover opens it, moving away closes it. A click pins it open.
- *   Touch  : tap to open, tap again to close.
- *   Keyboard: Enter or Space opens it, Tab moves through the accounts,
+ * One icon that reveals a short list of links (used for Instagram and WhatsApp).
+ *   Mouse   : hover opens it, moving away closes it. A click pins it open.
+ *   Touch   : tap to open, tap again to close.
+ *   Keyboard: Enter or Space opens it, Tab moves through the options,
  *             Escape closes it and returns focus to the icon.
- * It also closes when you click outside or choose an account.
+ * It also closes when you click outside or choose an option.
  */
-function InstagramMenu() {
+function SocialMenu({
+  id,
+  label,
+  icon,
+  items,
+}: {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  items: MenuItem[];
+}) {
   const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -193,9 +216,9 @@ function InstagramMenu() {
       <button
         ref={buttonRef}
         type="button"
-        aria-label="Instagram accounts"
+        aria-label={label}
         aria-expanded={open}
-        aria-controls="instagram-accounts"
+        aria-controls={id}
         onClick={() => {
           if (open && !openedByHover.current) {
             setOpen(false);
@@ -211,18 +234,16 @@ function InstagramMenu() {
           aria-hidden="true"
           className={`${FILL_CLASS} ${open ? "scale-y-100" : ""}`}
         />
-        <span className={GLYPH_CLASS}>
-          <InstagramIcon />
-        </span>
+        <span className={GLYPH_CLASS}>{icon}</span>
       </button>
 
       <AnimatePresence>
         {open && (
           <div className="absolute bottom-full left-0 z-30 pb-3 md:left-auto md:right-0">
             <motion.div
-              id="instagram-accounts"
+              id={id}
               role="group"
-              aria-label="Instagram accounts"
+              aria-label={label}
               className="w-[min(17.5rem,calc(100vw-2.5rem))] border border-[var(--line)] bg-ink p-2"
               initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
@@ -230,13 +251,13 @@ function InstagramMenu() {
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
               <ul>
-                {INSTAGRAM_ACCOUNTS.map((account) => (
-                  <li key={account.handle}>
+                {items.map((item) => (
+                  <li key={item.key}>
                     <a
-                      href={`https://www.instagram.com/${account.handle}/`}
+                      href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`@${account.handle}, ${account.spoken}. Opens Instagram in a new tab.`}
+                      aria-label={item.label}
                       onClick={() => {
                         openedByHover.current = false;
                         setOpen(false);
@@ -245,10 +266,10 @@ function InstagramMenu() {
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-[0.9375rem] text-paper">
-                          @{account.handle}
+                          {item.title}
                         </span>
                         <span className="type-mono mt-0.5 block text-ash transition-colors duration-300 group-hover/account:text-fog">
-                          {account.detail}
+                          {item.detail}
                         </span>
                       </span>
                       <span
@@ -269,10 +290,29 @@ function InstagramMenu() {
   );
 }
 
+const INSTAGRAM_ITEMS: MenuItem[] = INSTAGRAM_ACCOUNTS.map((account) => ({
+  key: account.handle,
+  title: `@${account.handle}`,
+  detail: account.detail,
+  href: `https://www.instagram.com/${account.handle}/`,
+  label: `@${account.handle}, ${account.spoken}. Opens Instagram in a new tab.`,
+}));
+
+const WHATSAPP_ITEMS: MenuItem[] = WHATSAPP_OPTIONS.map((option) => ({
+  key: option.number,
+  title: option.label,
+  detail: option.display,
+  href: whatsappUrl(option.number),
+  label: `WhatsApp ${option.label}, ${option.display}. Opens WhatsApp in a new tab.`,
+}));
+
+const contactLink =
+  "inline-block py-1 break-all transition-colors duration-300 hover:text-paper focus-visible:text-paper active:text-paper";
+
 /**
- * Restrained: wordmark and tagline, navigation, legal links, socials and
- * contact, back-to-top. Third-party credits live on the dedicated /credits page.
- * The logo is the WHITE version from src/lib/assets.ts (text until it is added).
+ * Restrained: logo and tagline, navigation, legal links, socials and contact,
+ * back-to-top, and the developer credit. Third-party asset credits live on the
+ * dedicated /credits page.
  */
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -285,12 +325,11 @@ export default function Footer() {
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-6">
             <Logo
-              variant="white"
-              className="h-8 w-auto md:h-10"
+              variant="black"
+              className="h-14 w-14 md:h-16 md:w-16"
               fallbackClassName="type-display-wide size-lg"
             />
-            {/* Space for the brand tagline */}
-            <p className="mt-4 max-w-[32ch] text-fog">Brand tagline comes here</p>
+            <p className="mt-5 max-w-[32ch] text-fog">{TAGLINE}</p>
           </div>
 
           <nav aria-label="Footer" className="type-mono md:col-span-3">
@@ -304,8 +343,8 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <div className="type-mono md:col-span-3">
-            <nav aria-label="Legal">
+          <div className="md:col-span-3">
+            <nav aria-label="Legal" className="type-mono">
               <p className="mb-4 text-ash">Legal</p>
               <ul>
                 {legalLinks.map((link) => (
@@ -317,34 +356,67 @@ export default function Footer() {
             </nav>
 
             <div className="mt-10">
-              <p className="mb-4 text-ash">Socials &amp; Contact</p>
+              <p className="type-mono mb-4 text-ash">Socials &amp; Contact</p>
 
               <div className="flex gap-2">
-                <InstagramMenu />
+                <SocialMenu
+                  id="instagram-accounts"
+                  label="Instagram accounts"
+                  icon={<InstagramIcon />}
+                  items={INSTAGRAM_ITEMS}
+                />
 
-                <SocialLink label="Facebook" href={FACEBOOK_URL}>
-                  <FacebookIcon />
-                </SocialLink>
+                <SocialMenu
+                  id="whatsapp-numbers"
+                  label="WhatsApp numbers"
+                  icon={<WhatsAppIcon />}
+                  items={WHATSAPP_ITEMS}
+                />
 
-                <SocialLink label="WhatsApp" href={WHATSAPP_URL}>
-                  <WhatsAppIcon />
-                </SocialLink>
+                {FACEBOOK_URL && (
+                  <SocialLink label="Facebook" href={FACEBOOK_URL}>
+                    <FacebookIcon />
+                  </SocialLink>
+                )}
               </div>
 
-              <ul className="mt-5 space-y-1 text-fog">
-                <li>Email: [to be added]</li>
-                <li>Phone: [to be added]</li>
+              <ul className="mt-6 space-y-1 text-[0.9375rem] text-fog">
+                <li>
+                  <a href={`mailto:${CONTACT.email}`} className={contactLink}>
+                    {CONTACT.email}
+                  </a>
+                </li>
+                {CONTACT.phones.map((phone) => (
+                  <li key={phone.tel}>
+                    <a href={`tel:${phone.tel}`} className={contactLink}>
+                      {phone.display}
+                    </a>
+                    <span className="type-mono ml-2 text-ash">{phone.label}</span>
+                  </li>
+                ))}
+                <li className="flex items-start gap-2 pt-1">
+                  <span className="mt-0.5 shrink-0 text-ash">
+                    <PinIcon />
+                  </span>
+                  <span>{CONTACT.location}</span>
+                </li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="type-mono hairline-top mt-16 flex flex-col gap-2 pt-4 text-ash md:flex-row md:items-center md:justify-between">
-          <p>© {year} Offscript. All rights reserved.</p>
+        <div className="hairline-top mt-16 flex flex-col gap-4 pt-4 md:flex-row md:items-end md:justify-between">
+          <div className="flex flex-col gap-3">
+            <p className="type-mono text-ash">
+              © {year} Offscript. All rights reserved.
+            </p>
+            <SenovraCredit />
+          </div>
+
           <button
             type="button"
             onClick={toTop}
-            className="group/top inline-flex h-11 items-center gap-3 text-fog transition-colors hover:text-paper active:text-paper"
+            className="group/top type-mono inline-flex h-11 items-center gap-3 self-start text-fog transition-colors hover:text-paper active:text-paper md:self-auto"
           >
             Back to top
             <span
