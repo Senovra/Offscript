@@ -22,7 +22,7 @@ type BatchItem = {
 // ==========================================
 
 // Easily change build status here in code: "active" | "halted" | "standby" | "deploy"
-const CURRENT_BUILD_STATUS: "active" | "halted" | "standby" | "deploy" = "halted";
+const CURRENT_BUILD_STATUS: "active" | "halted" | "standby" | "deploy" = "deploy";
 
 const BUILD_STATUS_CONFIG = {
   active: {
@@ -121,8 +121,8 @@ const DEVELOPMENT_BATCHES: BatchItem[] = [
     number: "03",
     name: "Image Quality, Responsive Fitting & Project Galleries",
     description: "Refining image delivery, responsive layouts and project specific galleries.",
-    status: "In progress",
-    state: "active",
+    status: "Completed and deployed",
+    state: "completed",
     tasks: [
       { name: "Responsive image fitting across Work reel, project heroes, next project band, Capabilities section and project open transition", completed: true },
       { name: "Improve mobile layouts where landscape images are excessively zoomed or cropped", completed: true },
@@ -135,14 +135,14 @@ const DEVELOPMENT_BATCHES: BatchItem[] = [
     number: "04",
     name: "Branding, Contact & Final Page Refinements",
     description: "Contact page selectors, metadata, 404 views and final checks.",
-    status: "Planned",
-    state: "planned",
+    status: "In progress",
+    state: "active",
     tasks: [
-      { name: "Contact page and WhatsApp selector refinements", completed: false },
-      { name: "Footer and Senovra credit", completed: false },
-      { name: "Logo, favicon and sharing metadata", completed: false },
-      { name: "Maintenance page and 404 page refinements", completed: false },
-      { name: "Remaining asset map configuration and integration checks", completed: false },
+      { name: "Contact page and WhatsApp selector refinements", completed: true },
+      { name: "Footer and Senovra credit", completed: true },
+      { name: "Logo, favicon and sharing metadata", completed: true },
+      { name: "Maintenance page and 404 page refinements", completed: true },
+      { name: "Remaining asset map configuration and integration checks", completed: true },
     ],
   },
 ];

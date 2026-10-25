@@ -15,9 +15,9 @@ import { ASSETS } from "@/lib/assets";
  * true  : every page shows the maintenance screen (and search engines are told
  *         not to index it)
  * false : the normal website
- * Change it, save, and restart/redeploy.
+ * Change it, save and restart/redeploy.
  */
-const MAINTENANCE = false;
+const MAINTENANCE = true;
 
 const archivo = Archivo({
   subsets: ["latin"],
