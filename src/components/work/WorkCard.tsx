@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, type PointerEvent } from "react";
-import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -10,6 +9,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import FitImage from "@/components/ui/FitImage";
 import ProjectLink from "./ProjectLink";
 import type { Project } from "@/lib/projects";
 import { EASE_CUT } from "@/lib/utils";
@@ -24,6 +24,11 @@ interface WorkCardProps {
  * like a window as it scrolls into view, and zooms a little on hover. On mouse
  * devices a "View" circle follows the pointer. Clicking opens the project with
  * the page transition.
+ *
+ * The frame is 4:3 on phones and 16:9 from tablets up. A photo that fits the
+ * frame fills it; one that would be cropped too much is shown whole over a
+ * soft backdrop (see FitImage), so landscape photos are no longer a thin slice
+ * on a phone.
  */
 export default function WorkCard({ project, index }: WorkCardProps) {
   const reduceMotion = useReducedMotion();
@@ -64,7 +69,7 @@ export default function WorkCard({ project, index }: WorkCardProps) {
         <motion.div
           ref={mediaRef}
           data-card-media
-          className="relative aspect-[4/5] overflow-hidden bg-graphite md:aspect-[16/9]"
+          className="relative aspect-[4/3] overflow-hidden bg-graphite md:aspect-[16/9]"
           initial={reduceMotion ? false : { clipPath: "inset(0% 0% 100% 0%)" }}
           whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
           viewport={{ once: true, margin: "-8% 0px" }}
@@ -79,14 +84,13 @@ export default function WorkCard({ project, index }: WorkCardProps) {
             className="absolute inset-[-6%]"
             style={reduceMotion ? undefined : { y: parallax }}
           >
-            <Image
+            <FitImage
               src={project.image}
               alt={project.imageAlt}
-              fill
-              sizes="(min-width: 768px) 84vw, 100vw"
+              sizes="(min-width: 768px) 92vw, 112vw"
               priority={index < 2}
-              className="object-cover transition-transform duration-[1400ms] [transition-timing-function:var(--ease-push)] group-hover:scale-[1.05]"
-              style={{ objectPosition: project.focal }}
+              focal={project.focal}
+              imageClassName="transition-transform duration-[1400ms] [transition-timing-function:var(--ease-push)] group-hover:scale-[1.04]"
             />
           </motion.div>
 

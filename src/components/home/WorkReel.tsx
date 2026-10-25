@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   motion,
@@ -10,7 +9,9 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import FitImage from "@/components/ui/FitImage";
 import ProjectLink from "@/components/work/ProjectLink";
+import { FULLSCREEN_MAX_CROP } from "@/lib/fit";
 import { projects, type Project } from "@/lib/projects";
 import { pad2 } from "@/lib/utils";
 
@@ -28,6 +29,11 @@ interface PlateBodyProps {
  * One full-screen project plate: media edge to edge, quiet utility labels at
  * the top, a moderate title at the bottom. Shared by the pinned reel and the
  * reduced-motion list. Project links open the project with the page transition.
+ *
+ * The photo fills the screen when little would be cropped. On screens where
+ * filling would crop too much (a landscape photo on a tall phone) the whole
+ * photo is shown over a soft backdrop instead (see FitImage). The photo is
+ * requested a little wider than the screen because it is scaled during the cut.
  */
 function PlateBody({ project, count, priority = false, imageScale }: PlateBodyProps) {
   return (
@@ -36,14 +42,13 @@ function PlateBody({ project, count, priority = false, imageScale }: PlateBodyPr
         className="absolute inset-0 will-change-transform"
         style={{ scale: imageScale }}
       >
-        <Image
+        <FitImage
           src={project.image}
           alt={project.imageAlt}
-          fill
-          sizes="100vw"
+          sizes="115vw"
           priority={priority}
-          className="object-cover"
-          style={{ objectPosition: project.focal }}
+          focal={project.focal}
+          maxCrop={FULLSCREEN_MAX_CROP}
         />
       </motion.div>
 
@@ -199,7 +204,7 @@ function ReelStatic() {
 /**
  * WORK
  * Full-screen project media, one at a time, with controlled cuts between them.
- * Real Offscript projects replace the placeholders in src/lib/projects.ts.
+ * Real Offscript projects live in src/lib/projects.ts.
  */
 export default function WorkReel() {
   const reduceMotion = useReducedMotion();

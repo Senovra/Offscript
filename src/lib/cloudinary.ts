@@ -12,6 +12,16 @@
  */
 export const CLOUDINARY_OPTIMISE = true;
 
+/**
+ * How much Cloudinary compresses photos (videos are not affected).
+ *   "auto"      : balanced (what the site has always used)
+ *   "auto:good" : a little sharper
+ *   "auto:best" : sharpest, with noticeably larger files
+ * This cannot add detail that is missing from the uploaded original. If a
+ * photo looks soft, check the size of the file that was uploaded first.
+ */
+export const IMAGE_QUALITY: "auto" | "auto:good" | "auto:best" = "auto";
+
 const RASTER_EXT = /\.(jpe?g|png|webp|avif|heic)$/i;
 const VIDEO_EXT = /\.(mp4|mov|webm|m4v)$/i;
 const UNTOUCHED_EXT = /\.(svg|gif)$/i;
@@ -64,7 +74,7 @@ export function imageUrl(url: string, width: number): string {
   if (!parsed) return url;
 
   if (parsed.hostname.endsWith("cloudinary.com")) {
-    return transform(url, "image", `f_auto,q_auto,c_limit,w_${w}`);
+    return transform(url, "image", `f_auto,q_${IMAGE_QUALITY},c_limit,w_${w}`);
   }
   if (parsed.hostname === "images.unsplash.com") {
     parsed.searchParams.set("w", String(w));

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import {
   motion,
   useMotionValueEvent,
@@ -10,7 +9,9 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import FitImage from "@/components/ui/FitImage";
 import Eyebrow from "@/components/ui/Eyebrow";
+import { FULLSCREEN_MAX_CROP } from "@/lib/fit";
 import { services, type Service } from "@/lib/projects";
 
 const HIDDEN = "inset(100% 0% 0% 0%)";
@@ -23,7 +24,11 @@ interface LayerProps {
   progress: MotionValue<number>;
 }
 
-/** One full-bleed environment. Scroll wipes it up over the previous one. */
+/**
+ * One full-bleed environment. Scroll wipes it up over the previous one.
+ * The photo fills the screen when little would be cropped, and is shown whole
+ * over a soft backdrop when filling would crop too much (see FitImage).
+ */
 function Layer({ service, index, count, progress }: LayerProps) {
   const step = 1 / count;
   const start = Math.max(0, index * step - step * 0.18);
@@ -38,12 +43,11 @@ function Layer({ service, index, count, progress }: LayerProps) {
       style={{ zIndex: index + 1, clipPath: index === 0 ? undefined : clipPath }}
     >
       <motion.div className="absolute inset-0 will-change-transform" style={{ scale }}>
-        <Image
+        <FitImage
           src={service.image}
           alt={service.imageAlt}
-          fill
-          sizes="100vw"
-          className="object-cover"
+          sizes="115vw"
+          maxCrop={FULLSCREEN_MAX_CROP}
         />
       </motion.div>
     </motion.div>
@@ -119,9 +123,6 @@ function PinnedCapabilities() {
         <div className="page-gutter absolute inset-0 z-[30] flex flex-col pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pt-[calc(var(--header-h)+0.75rem)] text-paper">
           <div className="flex items-start justify-between gap-4">
             <Eyebrow index="02">Capabilities</Eyebrow>
-            <span className="type-mono border border-paper/50 px-2 py-1">
-              Placeholder media
-            </span>
           </div>
 
           <ul className="mt-auto md:my-auto md:max-w-[34rem]">
@@ -158,7 +159,7 @@ function PinnedCapabilities() {
   );
 }
 
-/** Reduced motion: a plain, readable list with an image for each discipline. */
+/** Reduced motion: a plain, readable list with a photo for each discipline. */
 function StaticCapabilities() {
   return (
     <section aria-label="Capabilities" className="page-gutter bg-graphite py-24">
@@ -174,12 +175,10 @@ function StaticCapabilities() {
               <h3 className="type-display-wide size-md mt-2">{service.title}</h3>
             </div>
             <div className="relative aspect-[16/10] overflow-hidden bg-slate md:col-span-7">
-              <Image
+              <FitImage
                 src={service.image}
                 alt={service.imageAlt}
-                fill
                 sizes="(min-width: 768px) 58vw, 100vw"
-                className="object-cover"
               />
             </div>
           </li>
@@ -191,8 +190,7 @@ function StaticCapabilities() {
 
 /**
  * CAPABILITIES
- * Disciplines shown as environments that scroll controls. The imagery is
- * placeholder photography until real work is supplied.
+ * Disciplines shown as environments that scroll controls.
  */
 export default function Capabilities() {
   const reduceMotion = useReducedMotion();

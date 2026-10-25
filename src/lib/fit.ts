@@ -9,6 +9,14 @@
 /** The largest share of a photo that may be cropped away before it is shown whole. */
 export const MAX_CROP = 0.25;
 
+/**
+ * Full-screen frames (the home Work reel, the project hero, the next-project
+ * band and the home Capabilities stage) tolerate a little more crop, so
+ * desktop screens keep their intentional filled look while a tall phone
+ * screen shows the whole photo instead of a thin slice of it.
+ */
+export const FULLSCREEN_MAX_CROP = 0.35;
+
 const ratios = new Map<string, number>();
 
 /** Remembers a photo's natural proportions (width / height) once it has loaded. */

@@ -20,6 +20,9 @@
  * KEYS MUST MATCH THE CONTENT
  *   projects : the key is the project `slug` in src/lib/projects.ts
  *   services : the key is the service `id` in src/lib/projects.ts
+ *   gallery  : the key is the project `slug`, and EVERY project needs an entry
+ *              (an empty list is fine). A misspelt, missing or extra key is a
+ *              build error, so photos can never silently go missing.
  *   projects.ts reads these keys directly, so a missing or misspelt key is
  *   caught by the build (a TypeScript error), not discovered on the live site.
  *
@@ -45,10 +48,45 @@ export interface ImageAsset {
   alt: string;
 }
 
+/** One extra photo on a project page. */
+export interface GalleryAsset {
+  /** Paste the Cloudinary delivery URL here. */
+  url: string;
+  /** Short description for screen readers, e.g. "Players celebrating on court". */
+  alt: string;
+}
+
 /** The address the site should use for an image slot. */
 export function resolveImage(asset: ImageAsset): string {
   return asset.url.trim() || asset.fallback;
 }
+
+/**
+ * The main (hero) photo of each project. The key is the project `slug`.
+ * Declared here, above ASSETS, so the gallery below can be checked against it.
+ */
+const PROJECT_ASSETS = {
+  gis: {
+    url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510883/GIS_Hero.jpg",
+    fallback: NEUTRAL_TILE,
+    alt: "GIS",
+  },
+  dimo: {
+    url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510692/DIMO_Hero.jpg",
+    fallback: NEUTRAL_TILE,
+    alt: "DIMO",
+  },
+  blemura: {
+    url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510677/Blemura_Hero.jpg",
+    fallback: NEUTRAL_TILE,
+    alt: "Blemura",
+  },
+  modeling: {
+    url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510708/Home_01_-_Anisa_Hero.jpg",
+    fallback: NEUTRAL_TILE,
+    alt: "Modeling",
+  },
+} satisfies Record<string, ImageAsset>;
 
 export const ASSETS = {
   /* ------------------------------------------------------------------
@@ -154,29 +192,181 @@ export const ASSETS = {
 
   /* ------------------------------------------------------------------
      WORK: the main photo for each project. The key is the project `slug`.
-     To add a project (for example Ignite Band): add an entry here, then a
-     matching entry in src/lib/projects.ts with the same slug.
+     To add a project (for example Ignite Band): add an entry in
+     PROJECT_ASSETS above, then a matching entry in src/lib/projects.ts with
+     the same slug, then an entry (even an empty list) in `gallery` below.
      ------------------------------------------------------------------ */
-  projects: {
-    gis: {
-      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510883/GIS_Hero.jpg",
-      fallback: NEUTRAL_TILE,
-      alt: "GIS",
-    },
-    dimo: {
-      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510692/DIMO_Hero.jpg",
-      fallback: NEUTRAL_TILE,
-      alt: "DIMO",
-    },
-    blemura: {
-      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510677/Blemura_Hero.jpg",
-      fallback: NEUTRAL_TILE,
-      alt: "Blemura",
-    },
-    modeling: {
-      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510708/Home_01_-_Anisa_Hero.jpg",
-      fallback: NEUTRAL_TILE,
-      alt: "Modeling",
-    },
-  } satisfies Record<string, ImageAsset>,
+  projects: PROJECT_ASSETS,
+
+  /* ------------------------------------------------------------------
+     WORK GALLERY: the extra photos shown beneath each project's main photo.
+     The key is the project `slug`. Photos appear in the order listed here.
+     An empty list means the project shows no gallery.
+
+     To add a photo, copy ONE line like the example into the right project's
+     list, paste the photo's Cloudinary delivery URL between the quotes after
+     `url:`, and describe the photo after `alt:`. Keep the comma at the end.
+
+       { url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v.../Photo.jpg", alt: "Short description" },
+
+     Each project needs an entry here, even if its list is empty.
+     ------------------------------------------------------------------ */
+  gallery: {
+    gis: [
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510697/GIS_1.jpg",
+        alt: "GIS project photograph 1",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510695/GIS_2.jpg",
+        alt: "GIS project photograph 2",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510699/GIS_3.jpg",
+        alt: "GIS project photograph 3",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510697/GIS_4.jpg",
+        alt: "GIS project photograph 4",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510698/GIS_5.jpg",
+        alt: "GIS project photograph 5",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510705/GIS_6.jpg",
+        alt: "GIS project photograph 6",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510702/GIS_7.jpg",
+        alt: "GIS project photograph 7",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510702/GIS_8.jpg",
+        alt: "GIS project photograph 8",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510708/GIS_9.jpg",
+        alt: "GIS project photograph 9",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510701/GIS_10.jpg",
+        alt: "GIS project photograph 10",
+      },
+        ],
+    dimo: [
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510680/DIMO_1.jpg",
+        alt: "DIMO project photograph 1",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510683/DIMO_2.jpg",
+        alt: "DIMO project photograph 2",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/DIMO_3.jpg",
+        alt: "DIMO project photograph 3",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/DIMO_4.jpg",
+        alt: "DIMO project photograph 4",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510688/DIMO_5.jpg",
+        alt: "DIMO project photograph 5",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510690/DIMO_6.jpg",
+        alt: "DIMO project photograph 6",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510690/DIMO_7.jpg",
+        alt: "DIMO project photograph 7",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510692/DIMO_8.jpg",
+        alt: "DIMO project photograph 8",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510692/DIMO_9.jpg",
+        alt: "DIMO project photograph 9",
+      },
+        ],
+    blemura: [
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510667/Blemura_1.jpg",
+        alt: "Blemura project photograph 1",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510667/Blemura_2.jpg",
+        alt: "Blemura project photograph 2",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510668/Blemura_3.jpg",
+        alt: "Blemura project photograph 3",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510669/Blemura_4.jpg",
+        alt: "Blemura project photograph 4",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510669/Blemura_5.jpg",
+        alt: "Blemura project photograph 5",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510671/Blemura_6.jpg",
+        alt: "Blemura project photograph 6",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510671/Blemura_7.jpg",
+        alt: "Blemura project photograph 7",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510673/Blemura_8.jpg",
+        alt: "Blemura project photograph 8",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510673/Blemura_9.jpg",
+        alt: "Blemura project photograph 9",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510674/Blemura_10.jpg",
+        alt: "Blemura project photograph 10",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510676/Blemura_11.jpg",
+        alt: "Blemura project photograph 11",
+      },
+        ],
+    modeling: [
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510660/Anisa_2.jpg",
+        alt: "Anisa project photograph 2",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/Anisa_3.jpg",
+        alt: "Anisa project photograph 3",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510632/Anisa_4.jpg",
+        alt: "Anisa project photograph 4",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510663/Anisa_8.jpg",
+        alt: "Anisa project photograph 8",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510693/Anisa_9.jpg",
+        alt: "Anisa project photograph 9",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/Anisa_13.jpg",
+        alt: "Anisa project photograph 13",
+      },
+      {
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510696/Anisa_15.jpg",
+        alt: "Anisa project photograph 15",
+      },
+        ],
+  } satisfies Record<keyof typeof PROJECT_ASSETS, GalleryAsset[]>,
 };

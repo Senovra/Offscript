@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   motion,
@@ -9,14 +8,21 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import FitImage from "@/components/ui/FitImage";
+import { FULLSCREEN_MAX_CROP } from "@/lib/fit";
 import { finishProjectTransition } from "./projectTransition";
 import type { Project } from "@/lib/projects";
 import { EASE_PUSH } from "@/lib/utils";
 
 /**
  * Full-screen opening of a project page. It hands over from the transition
- * overlay (which has the identical photo and shade), settles the photo, and
- * raises the title. Scrolling drifts the photo and lifts the title away.
+ * overlay (which frames the photo the same way), settles the photo, and raises
+ * the title. Scrolling drifts the photo and lifts the title away.
+ *
+ * The photo fills the screen when little would be cropped, and is shown whole
+ * over a soft backdrop on screens where filling it would crop too much (for
+ * example a landscape photo on a tall phone). The photo is requested a little
+ * wider than the screen because it is scaled up during the animation.
  */
 export default function ProjectHero({ project }: { project: Project }) {
   const ref = useRef<HTMLElement>(null);
@@ -55,14 +61,13 @@ export default function ProjectHero({ project }: { project: Project }) {
           className="absolute inset-0 will-change-transform"
           style={reduceMotion ? undefined : { scale: imageScale, y: imageY }}
         >
-          <Image
+          <FitImage
             src={project.image}
             alt={project.imageAlt}
-            fill
+            sizes="125vw"
             priority
-            sizes="100vw"
-            className="object-cover"
-            style={{ objectPosition: project.focal }}
+            focal={project.focal}
+            maxCrop={FULLSCREEN_MAX_CROP}
           />
         </motion.div>
       </motion.div>

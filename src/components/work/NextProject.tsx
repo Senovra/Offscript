@@ -1,13 +1,15 @@
 "use client";
 
-import Image from "next/image";
+import FitImage from "@/components/ui/FitImage";
+import { FULLSCREEN_MAX_CROP } from "@/lib/fit";
 import ProjectLink from "./ProjectLink";
 import type { Project } from "@/lib/projects";
 
 /**
  * The band at the bottom of a project page that leads to the next project.
  * The photo zooms and brightens on hover, the arrow slides, a line draws along
- * the bottom edge, and clicking opens the next project from this band.
+ * the bottom edge, and clicking opens the next project from this band. The
+ * photo fits the band without heavy cropping (see FitImage).
  */
 export default function NextProject({ project }: { project: Project }) {
   return (
@@ -19,13 +21,13 @@ export default function NextProject({ project }: { project: Project }) {
       ariaLabel={`Next project: ${project.title}`}
       className="group relative block h-[70svh] overflow-hidden bg-graphite"
     >
-      <Image
+      <FitImage
         src={project.image}
         alt=""
-        fill
-        sizes="100vw"
-        className="object-cover transition-transform duration-[1600ms] [transition-timing-function:var(--ease-push)] group-hover:scale-[1.06]"
-        style={{ objectPosition: project.focal }}
+        sizes="106vw"
+        focal={project.focal}
+        maxCrop={FULLSCREEN_MAX_CROP}
+        imageClassName="transition-transform duration-[1600ms] [transition-timing-function:var(--ease-push)] group-hover:scale-[1.06]"
       />
       <div
         aria-hidden="true"
