@@ -77,7 +77,7 @@ const PROJECT_ASSETS = {
     alt: "DIMO",
   },
   blemura: {
-    url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510677/Blemura_Hero.jpg",
+    url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510674/Blemura_10.jpg",
     fallback: NEUTRAL_TILE,
     alt: "Blemura",
   },
@@ -226,7 +226,7 @@ export const ASSETS = {
         alt: "GIS project photograph 3",
       },
       {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510697/GIS_4.jpg",
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510702/GIS_8.jpg",
         alt: "GIS project photograph 4",
       },
       {
@@ -242,7 +242,7 @@ export const ASSETS = {
         alt: "GIS project photograph 7",
       },
       {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510702/GIS_8.jpg",
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510697/GIS_4.jpg",
         alt: "GIS project photograph 8",
       },
       {
@@ -330,7 +330,7 @@ export const ASSETS = {
         alt: "Blemura project photograph 9",
       },
       {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510674/Blemura_10.jpg",
+        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510677/Blemura_Hero.jpg",
         alt: "Blemura project photograph 10",
       },
       {
