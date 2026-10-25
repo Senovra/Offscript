@@ -33,13 +33,13 @@ export default function LegalPage({ title, sections }: LegalPageProps) {
       <div className="page-gutter pb-28">
         <Note>
           <p>
-            Offscript team, this is a working draft of your {title.toLowerCase()}.
+            This is a working draft of your {title.toLowerCase()}.
             We&apos;ve laid out the sections most sites need and kept the wording
             plain. Anything in [square brackets] is something only you can tell us.
           </p>
           <p>
             We&apos;re a web team, not lawyers, so please have a solicitor read this
-            before the site goes live. Delete these notes once it&apos;s settled.
+            before the site goes live. We will delete these notes once it&apos;s settled.
           </p>
         </Note>
 
