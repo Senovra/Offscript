@@ -1,8 +1,10 @@
+
 import PageHeader from "@/components/ui/PageHeader";
 
 export interface LegalSection {
   heading: string;
   paragraphs: string[];
+  ask?: string;
 }
 
 interface LegalPageProps {
@@ -32,13 +34,14 @@ function withLinks(text: string) {
 }
 
 /**
- * Shared layout for the Privacy Policy and the Terms & Conditions.
- * Each section pairs a numbered heading (left, fixed in place on large screens
- * while the section is read) with its text (right), set at a comfortable
- * reading width.
+ * Shared layout for the Privacy Policy and Terms & Conditions.
+ * Each section pairs a numbered heading with its text.
  */
-export default function LegalPage({ title, sections, intro }: LegalPageProps) {
-  // Same title style as every other page: the last word in italics
+export default function LegalPage({
+  title,
+  sections,
+  intro,
+}: LegalPageProps) {
   const words = title.split(" ");
   const lastWord = words.pop();
 
@@ -62,7 +65,9 @@ export default function LegalPage({ title, sections, intro }: LegalPageProps) {
           >
             <div className="md:col-span-4">
               <div className="md:sticky md:top-[calc(var(--header-h)+2rem)]">
-                <p className="type-mono text-ash">{String(index + 1).padStart(2, "0")}</p>
+                <p className="type-mono text-ash">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
                 <h2 className="type-editorial mt-2 text-[1.375rem] leading-[1.2] text-paper md:text-[1.625rem]">
                   {section.heading}
                 </h2>
@@ -75,6 +80,15 @@ export default function LegalPage({ title, sections, intro }: LegalPageProps) {
                   {withLinks(paragraph)}
                 </p>
               ))}
+
+              {section.ask && (
+                <aside className="max-w-[62ch] border-l border-[var(--line)] pl-4 text-sm leading-7 text-ash">
+                  <p className="type-mono mb-1 text-[0.65rem] tracking-[0.1em]">
+                    INFORMATION REQUIRED
+                  </p>
+                  <p>{section.ask}</p>
+                </aside>
+              )}
             </div>
           </section>
         ))}
