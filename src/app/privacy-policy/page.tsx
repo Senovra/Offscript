@@ -8,6 +8,9 @@ export const metadata: Metadata = {
     "How personal information is handled in connection with enquiries made through the Offscript website.",
 };
 
+/** Change this date whenever the policy wording changes. It is shown beneath the policy. */
+const LAST_UPDATED = "26 October 2026";
+
 const sections: LegalSection[] = [
   {
     heading: "Who we are",
@@ -57,6 +60,7 @@ export default function PrivacyPolicyPage() {
       title="Privacy Policy"
       intro="This policy describes how personal information is handled in connection with enquiries made through this website."
       sections={sections}
+      updated={LAST_UPDATED}
     />
   );
 }

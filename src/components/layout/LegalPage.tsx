@@ -1,9 +1,12 @@
-
 import PageHeader from "@/components/ui/PageHeader";
 
 export interface LegalSection {
   heading: string;
   paragraphs: string[];
+  /**
+   * Accepted so that existing pages that still carry it keep compiling.
+   * It is never displayed.
+   */
   ask?: string;
 }
 
@@ -12,6 +15,8 @@ interface LegalPageProps {
   sections: LegalSection[];
   /** An optional opening line, shown under the title. */
   intro?: string;
+  /** An optional "last updated" date, shown beneath the content (for example "26 October 2026"). */
+  updated?: string;
 }
 
 const EMAIL = /([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/;
@@ -34,14 +39,13 @@ function withLinks(text: string) {
 }
 
 /**
- * Shared layout for the Privacy Policy and Terms & Conditions.
- * Each section pairs a numbered heading with its text.
+ * Shared layout for the Privacy Policy and the Terms & Conditions.
+ * Each section pairs a numbered heading (left, fixed in place on large screens
+ * while the section is read) with its text (right), set at a comfortable
+ * reading width. An optional date sits beneath all of the content.
  */
-export default function LegalPage({
-  title,
-  sections,
-  intro,
-}: LegalPageProps) {
+export default function LegalPage({ title, sections, intro, updated }: LegalPageProps) {
+  // Same title style as every other page: the last word in italics
   const words = title.split(" ");
   const lastWord = words.pop();
 
@@ -65,9 +69,7 @@ export default function LegalPage({
           >
             <div className="md:col-span-4">
               <div className="md:sticky md:top-[calc(var(--header-h)+2rem)]">
-                <p className="type-mono text-ash">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
+                <p className="type-mono text-ash">{String(index + 1).padStart(2, "0")}</p>
                 <h2 className="type-editorial mt-2 text-[1.375rem] leading-[1.2] text-paper md:text-[1.625rem]">
                   {section.heading}
                 </h2>
@@ -80,18 +82,15 @@ export default function LegalPage({
                   {withLinks(paragraph)}
                 </p>
               ))}
-
-              {section.ask && (
-                <aside className="max-w-[62ch] border-l border-[var(--line)] pl-4 text-sm leading-7 text-ash">
-                  <p className="type-mono mb-1 text-[0.65rem] tracking-[0.1em]">
-                    INFORMATION REQUIRED
-                  </p>
-                  <p>{section.ask}</p>
-                </aside>
-              )}
             </div>
           </section>
         ))}
+
+        {updated && (
+          <p className="hairline-top type-mono pt-6 text-ash md:pt-8">
+            Last updated: {updated}
+          </p>
+        )}
       </div>
     </>
   );
