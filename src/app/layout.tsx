@@ -9,6 +9,8 @@ import Maintenance from "@/components/layout/Maintenance";
 import Header from "@/components/navigation/Header";
 import Preloader from "@/components/home/Preloader";
 import { ASSETS } from "@/lib/assets";
+import { CONTACT, INSTAGRAM_ACCOUNTS } from "@/lib/contact";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * MAINTENANCE SWITCH
@@ -40,8 +42,8 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-/** The production address. The deploy workflow also sets NEXT_PUBLIC_SITE_URL to it. */
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://offscript.website";
+/** The page title used when a page does not set its own (the home page). */
+const HOME_TITLE = "Offscript | Marketing Agency in Bangladesh & Sri Lanka";
 
 /** In the words of Offscript's own About copy. */
 const DESCRIPTION =
@@ -59,17 +61,18 @@ const shareUrl = ASSETS.share.trim();
 const SHARE_IS_LANDSCAPE = false;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Offscript",
+    default: HOME_TITLE,
     template: "%s | Offscript",
   },
   description: DESCRIPTION,
+  // "./" is resolved against metadataBase for each page, so every page names itself as canonical
+  alternates: { canonical: "./" },
   icons: iconUrl ? { icon: iconUrl, apple: iconUrl } : undefined,
   openGraph: {
-    title: "Offscript",
+    title: HOME_TITLE,
     description: DESCRIPTION,
-    url: siteUrl,
     siteName: "Offscript",
     type: "website",
     images: shareUrl
@@ -85,11 +88,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: SHARE_IS_LANDSCAPE ? "summary_large_image" : "summary",
-    title: "Offscript",
+    title: HOME_TITLE,
     description: DESCRIPTION,
     images: shareUrl ? [shareUrl] : undefined,
   },
-  robots: MAINTENANCE ? { index: false, follow: false } : undefined,
+  robots: MAINTENANCE ? { index: false, follow: false } : { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
@@ -99,6 +102,45 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
 };
+
+/**
+ * Structured data (schema.org) built only from details Offscript has
+ * confirmed: the name, the address of the site, the business email, the three
+ * Instagram accounts, and the two locations (Dhaka, Bangladesh and Colombo,
+ * Sri Lanka). No ratings, reviews, dates or other claims.
+ */
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Offscript",
+    url: SITE_URL,
+    ...(iconUrl ? { logo: iconUrl } : {}),
+    email: CONTACT.email,
+    sameAs: INSTAGRAM_ACCOUNTS.map(
+      (account) => `https://www.instagram.com/${account.handle}/`
+    ),
+    areaServed: ["Bangladesh", "Sri Lanka"],
+    address: [
+      {
+        "@type": "PostalAddress",
+        addressLocality: "Dhaka",
+        addressCountry: "BD",
+      },
+      {
+        "@type": "PostalAddress",
+        addressLocality: "Colombo",
+        addressCountry: "LK",
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Offscript",
+    url: SITE_URL,
+  },
+];
 
 export default function RootLayout({
   children,
@@ -119,6 +161,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontClasses}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:bg-paper focus:px-4 focus:py-2 focus:text-ink"
