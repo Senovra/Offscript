@@ -19,7 +19,7 @@ import { SITE_URL } from "@/lib/site";
  * false : the normal website
  * Change it, save, and restart/redeploy.
  */
-const MAINTENANCE = true;
+const MAINTENANCE = false;
 
 const archivo = Archivo({
   subsets: ["latin"],
