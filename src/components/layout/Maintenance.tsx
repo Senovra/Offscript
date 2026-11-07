@@ -76,7 +76,7 @@ export default function Maintenance() {
       >
         <Logo
           variant="black"
-          className="h-9 w-9 md:h-10 md:w-10"
+          className="h-12 w-12 md:h-14 md:w-14"
           fallbackClassName="type-display-wide text-base uppercase tracking-[0.16em] md:text-lg"
         />
 

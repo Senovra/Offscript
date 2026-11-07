@@ -14,19 +14,37 @@ function srcSetFor(src: string): string | undefined {
   return urls.map((url, index) => `${url} ${WIDTHS[index]}w`).join(", ");
 }
 
+interface ProjectGalleryProps {
+  images: GalleryImage[];
+  /** Small label above the photos. Pass "" for none (used inside a model's section). */
+  label?: string;
+  /** Description for screen readers. */
+  ariaLabel?: string;
+  /** Spacing and gutter classes for the section. */
+  className?: string;
+}
+
 /**
- * Extra photos on a project page. Each photo keeps its own proportions (never
+ * Photos on a project page. Each photo keeps its own proportions (never
  * cropped or stretched) and the photos flow into one column on phones and two
  * on larger screens. Each opens with the same wipe the rest of the site uses.
- * Add photos in src/lib/assets.ts (see the guide). With none, nothing shows.
+ * Add photos in src/lib/assets.ts (see the notes there). With none, nothing shows.
+ *
+ * The defaults give the project-level gallery its usual look. A model's
+ * section on the Modeling page passes its own label, ariaLabel and className.
  */
-export default function ProjectGallery({ images }: { images: GalleryImage[] }) {
+export default function ProjectGallery({
+  images,
+  label = "Gallery",
+  ariaLabel = "Project gallery",
+  className = "page-gutter pb-16 md:pb-24",
+}: ProjectGalleryProps) {
   const reduceMotion = useReducedMotion();
   if (images.length === 0) return null;
 
   return (
-    <section aria-label="Project gallery" className="page-gutter pb-16 md:pb-24">
-      <p className="type-mono mb-6 text-ash">Gallery</p>
+    <section aria-label={ariaLabel} className={className}>
+      {label && <p className="type-mono mb-6 text-ash">{label}</p>}
 
       <div className="columns-1 gap-4 md:columns-2 md:gap-6">
         {images.map((image) => (

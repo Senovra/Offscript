@@ -9,17 +9,25 @@
  * The written copy was supplied by Offscript. It has only had light spelling,
  * grammar and punctuation corrections.
  */
-import { ASSETS, resolveImage } from "./assets";
+import { ASSETS, resolveImage, type GalleryAsset } from "./assets";
 
 /* --------------------------------------------------------------------------
    Types
    -------------------------------------------------------------------------- */
 export interface ProjectStory {
+  /** Stable identifier. Used for the Modeling project, where each model is a story. */
+  id?: string;
   /** e.g. "Glenrich x Offscript" */
   heading: string;
   /** Short facts shown above the description, e.g. Event, Service. */
   details: Array<{ label: string; value: string }>;
-  description: string;
+  /** Optional: a model can be shown with photographs only. */
+  description?: string;
+  /**
+   * This story's own photographs. When a project's stories have them, its page
+   * is laid out story by story (see the Modeling project below).
+   */
+  gallery?: GalleryImage[];
 }
 
 export interface GalleryImage {
@@ -81,6 +89,61 @@ function galleryFor(slug: string): GalleryImage[] {
   return (galleryAssets[slug] ?? [])
     .filter((image) => image.url.trim() !== "")
     .map((image) => ({ src: image.url.trim(), alt: image.alt }));
+}
+
+/* --------------------------------------------------------------------------
+   MODELING: one entry per model. The Modeling project is a single project
+   (one route, /work/modeling/); each model below becomes its own numbered
+   section on that page, with its own photographs.
+
+   `id` must match a list in `models` in src/lib/assets.ts (that is where the
+   Cloudinary URLs go). A model's section appears once it has photos, a
+   description or details.
+
+   TO ADD A MODEL:
+     1. In src/lib/assets.ts add a photo list for it inside MODEL_GALLERIES.
+     2. Add an entry below, for example:
+          { id: "newmodel", heading: "Name x Offscript" },
+        and, if Offscript supplies them:
+          details: [{ label: "Project type", value: "..." }],
+          description: "...",
+   -------------------------------------------------------------------------- */
+type ModelId = keyof typeof ASSETS.models;
+
+interface ModelEntry {
+  id: ModelId;
+  heading: string;
+  details?: ProjectStory["details"];
+  description?: string;
+}
+
+const MODELING_MODELS: ModelEntry[] = [
+  {
+    id: "anisa",
+    heading: "Anisa x Offscript",
+    details: [{ label: "Project type", value: "Model Application" }],
+    description:
+      "Anisa is a commercial model who chose Offscript for her modelling application to various agencies. What did we do? We contacted the agencies, got their requirements and sculpted a beautiful, scenic shoot with Anisa, according to the requirements of the particular agencies that she had preferred to join.",
+  },
+  // Offscript has not supplied details or a description for Gagana yet.
+  // When it does, add `details` and `description` here, like Anisa's entry.
+  { id: "gagana", heading: "Gagana x Offscript" },
+  // Offscript has not supplied details or a description for Farishta yet.
+  { id: "farishta", heading: "Farishta x Offscript" },
+  // ADD A NEW MODEL ABOVE THIS LINE (see the steps in the comment above).
+];
+
+function modelStory(model: ModelEntry): ProjectStory {
+  const photos: GalleryAsset[] = ASSETS.models[model.id];
+  return {
+    id: model.id,
+    heading: model.heading,
+    details: model.details ?? [],
+    description: model.description,
+    gallery: photos
+      .filter((image) => image.url.trim() !== "")
+      .map((image) => ({ src: image.url.trim(), alt: image.alt })),
+  };
 }
 
 /* --------------------------------------------------------------------------
@@ -167,14 +230,8 @@ export const projects: Project[] = [
     imageAlt: projectAssets.modeling.alt,
     focal: "50% 50%",
     isPlaceholder: false,
-    stories: [
-      {
-        heading: "Anisa x Offscript",
-        details: [{ label: "Project type", value: "Model Application" }],
-        description:
-          "Anisa is a commercial model who chose Offscript for her modelling application to various agencies. What did we do? We contacted the agencies, got their requirements and sculpted a beautiful, scenic shoot with Anisa, according to the requirements of the particular agencies that she had preferred to join.",
-      },
-    ],
+    // One story per model, each with its own photographs (see MODELING_MODELS above)
+    stories: MODELING_MODELS.map(modelStory),
     gallery: galleryFor("modeling"),
   },
 ];

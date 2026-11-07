@@ -43,7 +43,7 @@ const geistMono = Geist_Mono({
 });
 
 /** The page title used when a page does not set its own (the home page). */
-const HOME_TITLE = "Offscript | Marketing Agency in Bangladesh & Sri Lanka";
+const HOME_TITLE = "Offscript";
 
 /** In the words of Offscript's own About copy. */
 const DESCRIPTION =
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: HOME_TITLE,
-    template: "%s | Offscript",
+    template: "%s - Offscript",
   },
   description: DESCRIPTION,
   // "./" is resolved against metadataBase for each page, so every page names itself as canonical

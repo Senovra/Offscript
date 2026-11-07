@@ -23,6 +23,8 @@
  *   gallery  : the key is the project `slug`, and EVERY project needs an entry
  *              (an empty list is fine). A misspelt, missing or extra key is a
  *              build error, so photos can never silently go missing.
+ *   models   : the Modeling project's photos, one list per model. The key is
+ *              the model's `id` in MODELING_MODELS (src/lib/projects.ts).
  *   projects.ts reads these keys directly, so a missing or misspelt key is
  *   caught by the build (a TypeScript error), not discovered on the live site.
  *
@@ -87,6 +89,113 @@ const PROJECT_ASSETS = {
     alt: "Modeling",
   },
 } satisfies Record<string, ImageAsset>;
+
+/**
+ * MODELING: one photo list per model. The key is the model's `id` in
+ * MODELING_MODELS (src/lib/projects.ts). Photos appear in the order listed.
+ * A model's section shows on the Modeling page once its list has photos.
+ *
+ * TO ADD PHOTOS to a model: copy ONE line like the example into that model's
+ * list, paste the photo's Cloudinary delivery URL between the quotes after
+ * `url:`, and describe the photo after `alt:`. Keep the comma at the end.
+ *
+ *   { url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v.../Photo.jpg", alt: "Short description" },
+ *
+ * TO ADD A NEW MODEL: add a list for it here (for example `newmodel: [ ... ],`),
+ * then add an entry for it in MODELING_MODELS in src/lib/projects.ts.
+ */
+const MODEL_GALLERIES = {
+  anisa: [
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510660/Anisa_2.jpg",
+      alt: "Anisa project photograph 2",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/Anisa_3.jpg",
+      alt: "Anisa project photograph 3",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510632/Anisa_4.jpg",
+      alt: "Anisa project photograph 4",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510696/Anisa_15.jpg",
+      alt: "Anisa project photograph 8",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510693/Anisa_9.jpg",
+      alt: "Anisa project photograph 9",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/Anisa_13.jpg",
+      alt: "Anisa project photograph 13",
+    },
+    // REMOVED to keep six photos (Onal allowed one Anisa photo to be dropped).
+    // Kept here so the URL is not lost. To show it instead of another photo,
+    // remove the two slashes below and comment out a different line above.
+    // {
+    //   url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510663/Anisa_8.jpgg",
+    //   alt: "Anisa project photograph 8",
+    // },
+    // ANISA: to add more photos, paste a new line ABOVE this comment.
+  ],
+  gagana: [
+    // GAGANA: paste Gagana's six photo lines HERE (see the example above MODEL_GALLERIES).
+    // The "Gagana x Offscript" section appears on the Modeling page once this list has photos.
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793615978/IMG_5102.jpg",
+      alt: "Gagana project photograph 1",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793615991/SCRL_0055.jpg",
+      alt: "Gagana project photograph 2",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793615987/SCRL_0031.jpg",
+      alt: "Gagana project photograph 3",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793615986/SCRL_0030.jpg",
+      alt: "Gagana project photograph 4",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793615981/SCRL_0029.jpg",
+      alt: "Gagana project photograph 5",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793615990/SCRL_0022.jpg",
+      alt: "Gagana project photograph 6",
+    },
+  ],
+  farishta: [
+    // FARISHTA: paste Farishta's six photo lines HERE (see the example above MODEL_GALLERIES).
+    // The "Farishta x Offscript" section appears on the Modeling page once this list has photos.
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793616312/IMG_6131.jpg",
+      alt: "Farishta project photograph 1",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793616300/IMG_6117.jpg",
+      alt: "Farishta project photograph 2",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793616307/IMG_6121.jpg",
+      alt: "Farishta project photograph 3",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793616315/IMG_6123.jpg",
+      alt: "Farishta project photograph 4",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793616312/IMG_6124.jpg",
+      alt: "Farishta project photograph 5",
+    },
+    {
+      url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1793616313/IMG_6128.jpg",
+      alt: "Farishta project photograph 6",
+    },
+  ],
+} satisfies Record<string, GalleryAsset[]>;
 
 export const ASSETS = {
   /* ------------------------------------------------------------------
@@ -210,6 +319,9 @@ export const ASSETS = {
        { url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v.../Photo.jpg", alt: "Short description" },
 
      Each project needs an entry here, even if its list is empty.
+
+     MODELING is empty on purpose: its photos are listed per model in
+     MODEL_GALLERIES above (exposed below as `models`).
      ------------------------------------------------------------------ */
   gallery: {
     gis: [
@@ -338,35 +450,12 @@ export const ASSETS = {
         alt: "Blemura project photograph 11",
       },
         ],
-    modeling: [
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510660/Anisa_2.jpg",
-        alt: "Anisa project photograph 2",
-      },
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/Anisa_3.jpg",
-        alt: "Anisa project photograph 3",
-      },
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510632/Anisa_4.jpg",
-        alt: "Anisa project photograph 4",
-      },
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510663/Anisa_8.jpg",
-        alt: "Anisa project photograph 8",
-      },
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510693/Anisa_9.jpg",
-        alt: "Anisa project photograph 9",
-      },
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510687/Anisa_13.jpg",
-        alt: "Anisa project photograph 13",
-      },
-      {
-        url: "https://res.cloudinary.com/ljh4zjr8/image/upload/v1792510696/Anisa_15.jpg",
-        alt: "Anisa project photograph 15",
-      },
-        ],
+    modeling: [],
   } satisfies Record<keyof typeof PROJECT_ASSETS, GalleryAsset[]>,
+
+  /* ------------------------------------------------------------------
+     MODELING, PER MODEL: see MODEL_GALLERIES above for the photos and for
+     exactly where to paste more.
+     ------------------------------------------------------------------ */
+  models: MODEL_GALLERIES,
 };
