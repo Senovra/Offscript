@@ -3,11 +3,15 @@ import DisciplineClock from "@/components/about/DisciplineClock";
 import FitImage from "@/components/ui/FitImage";
 import PageHeader from "@/components/ui/PageHeader";
 import { aboutCopy, aboutImages } from "@/lib/projects";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "About Offscript.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "About Offscript | Media & Marketing in Bangladesh and Sri Lanka",
+  absoluteTitle: true,
+  description:
+    "Offscript helps businesses, organizations and individuals find their clarity and display their brand image, from photography to social media management.",
+  path: "/about/",
+});
 
 /** A section heading in the site's title style: the last word in italics. */
 function Heading({ text }: { text: string }) {

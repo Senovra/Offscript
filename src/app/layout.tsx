@@ -10,6 +10,7 @@ import Header from "@/components/navigation/Header";
 import Preloader from "@/components/home/Preloader";
 import { ASSETS } from "@/lib/assets";
 import { CONTACT, INSTAGRAM_ACCOUNTS } from "@/lib/contact";
+import { TITLE_TEMPLATE, socialMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 
 /**
@@ -45,54 +46,32 @@ const geistMono = Geist_Mono({
 /** The page title used when a page does not set its own (the home page). */
 const HOME_TITLE = "Offscript";
 
-/** In the words of Offscript's own About copy. */
 const DESCRIPTION =
-  "Offscript is a marketing agency in Bangladesh and Sri Lanka: photography, videography, editing, graphics & design and social media management.";
+  "Offscript is a media and marketing company in Bangladesh and Sri Lanka: creative strategy, branding, content creation, social media and digital campaigns.";
 
 /** From src/lib/assets.ts. */
 const iconUrl = ASSETS.logo.icon.trim();
-const shareUrl = ASSETS.share.trim();
 
 /**
- * The current sharing image is a SQUARE 512 x 512 icon. Once a dedicated
- * landscape image (about 1200 x 630) is in ASSETS.share, set this to true so
- * the cards use the large format.
+ * Site-wide sharing tags (used by any page that does not set its own).
+ * The sharing image and its square/landscape setting live in src/lib/seo.ts.
  */
-const SHARE_IS_LANDSCAPE = false;
+const social = socialMetadata({ title: HOME_TITLE, description: DESCRIPTION });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: HOME_TITLE,
-    template: "%s - Offscript",
+    template: TITLE_TEMPLATE,
   },
   description: DESCRIPTION,
   // "./" is resolved against metadataBase for each page, so every page names itself as canonical
   alternates: { canonical: "./" },
   icons: iconUrl ? { icon: iconUrl, apple: iconUrl } : undefined,
-  openGraph: {
-    title: HOME_TITLE,
-    description: DESCRIPTION,
-    siteName: "Offscript",
-    type: "website",
-    images: shareUrl
-      ? [
-          {
-            url: shareUrl,
-            width: SHARE_IS_LANDSCAPE ? 1200 : 512,
-            height: SHARE_IS_LANDSCAPE ? 630 : 512,
-            alt: "Offscript",
-          },
-        ]
-      : undefined,
-  },
-  twitter: {
-    card: SHARE_IS_LANDSCAPE ? "summary_large_image" : "summary",
-    title: HOME_TITLE,
-    description: DESCRIPTION,
-    images: shareUrl ? [shareUrl] : undefined,
-  },
-  robots: MAINTENANCE ? { index: false, follow: false } : { index: true, follow: true },
+  ...social,
+  robots: MAINTENANCE
+    ? { index: false, follow: false }
+    : { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

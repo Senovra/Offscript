@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import PageHeader from "@/components/ui/PageHeader";
 import WorkCard from "@/components/work/WorkCard";
 import { projects } from "@/lib/projects";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Work",
-  description: "Selected work by Offscript.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Selected Work | Offscript",
+  absoluteTitle: true,
+  description:
+    "Selected work by Offscript for Glenrich International School Dhaka, DIMO, Blemura and modeling projects.",
+  path: "/work/",
+});
 
 export default function WorkPage() {
   return (

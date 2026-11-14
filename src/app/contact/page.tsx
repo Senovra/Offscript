@@ -3,11 +3,15 @@ import ContactForm from "@/components/contact/ContactForm";
 import WhatsAppChooser from "@/components/contact/WhatsAppChooser";
 import PageHeader from "@/components/ui/PageHeader";
 import { CONTACT } from "@/lib/contact";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Start a project with Offscript.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Contact Offscript | Dhaka, Bangladesh & Colombo, Sri Lanka",
+  absoluteTitle: true,
+  description:
+    "Start a project with Offscript. Email, phone and WhatsApp for Dhaka, Bangladesh and Colombo, Sri Lanka.",
+  path: "/contact/",
+});
 
 const rowClass =
   "hairline-bottom group py-4 transition-all duration-300 first:border-t first:border-[var(--line)] hover:pl-3";

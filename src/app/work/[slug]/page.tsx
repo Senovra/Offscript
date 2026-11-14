@@ -4,6 +4,7 @@ import NextProject from "@/components/work/NextProject";
 import ProjectGallery from "@/components/work/ProjectGallery";
 import ProjectHero from "@/components/work/ProjectHero";
 import { getProject, projects, type ProjectStory } from "@/lib/projects";
+import { PROJECT_DESCRIPTIONS, pageMetadata } from "@/lib/seo";
 
 type Params = { slug: string };
 
@@ -24,10 +25,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const project = getProject(slug);
-  return {
-    title: project ? project.title : "Project",
-    description: project?.stories[0]?.description,
-  };
+  if (!project) return { title: "Project" };
+
+  const description = PROJECT_DESCRIPTIONS[project.slug];
+  if (!description) {
+    // Modeling keeps its existing metadata until its content is final
+    return { title: project.title, description: project.stories[0]?.description };
+  }
+
+  return pageMetadata({
+    title: project.title,
+    description,
+    path: `/work/${project.slug}/`,
+  });
 }
 
 /** A story is shown once it has something to show: details, a description or photographs. */
