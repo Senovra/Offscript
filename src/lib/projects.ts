@@ -125,11 +125,20 @@ const MODELING_MODELS: ModelEntry[] = [
     description:
       "Anisa is a commercial model who chose Offscript for her modelling application to various agencies. What did we do? We contacted the agencies, got their requirements and sculpted a beautiful, scenic shoot with Anisa, according to the requirements of the particular agencies that she had preferred to join.",
   },
-  // Offscript has not supplied details or a description for Gagana yet.
-  // When it does, add `details` and `description` here, like Anisa's entry.
-  { id: "gagana", heading: "Gagana x Offscript" },
-  // Offscript has not supplied details or a description for Farishta yet.
-  { id: "farishta", heading: "Farishta x Offscript" },
+  {
+    id: "gagana",
+    heading: "Gagana x Offscript",
+    details: [{ label: "Project type", value: "Model Debut" }],
+    description:
+      "Gagana is a commercial, parts and catalogue model who chose Offscript to debut his online presence. Dark Dhaka streets, emphasizing bright lights, shimmering jewelry and his shaky, yet demanding presence, Offscript portrayed Gagana’s image exactly as he interpreted it.",
+  },
+  {
+    id: "farishta",
+    heading: "Farishta x Offscript",
+    details: [{ label: "Project type", value: "Personal Shoot" }],
+    description:
+      "Farishta already plays an influential role in the Dhaka fashion industry, and Offscript aided in publishing her new style, for which she had taken inspiration from the Gagana x Offscript project. Sticking to the dark streets of Dhaka, Offscript focussed on Farishta’s style and sense of fashion which she had portrayed as ‘dark, emo yet sleek.’",
+  },
   // ADD A NEW MODEL ABOVE THIS LINE (see the steps in the comment above).
 ];
 
