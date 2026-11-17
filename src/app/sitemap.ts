@@ -14,7 +14,15 @@ export const dynamic = "force-static";
  *                            below once the final text is published.
  *   /credits/              : an attribution page with little search value.
  */
-const PAGES = ["/", "/about/", "/services/", "/work/", "/contact/", "/privacy-policy/"];
+const PAGES = [
+  "/",
+  "/about/",
+  "/services/",
+  "/work/",
+  "/contact/",
+  "/privacy-policy/",
+  "/terms-and-conditions/",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [...PAGES, ...projects.map((project) => `/work/${project.slug}/`)];
