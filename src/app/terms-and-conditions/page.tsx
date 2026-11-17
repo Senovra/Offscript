@@ -90,7 +90,7 @@ const sections: LegalSection[] = [
   {
     heading: "Changes",
     paragraphs: [
-      "We may update these terms. The latest version will always be on this page. Last updated: [date].",
+      "We may update these terms. The latest version will always be on this page. Last updated: 17 November 2026.",
     ],
   },
 ];
