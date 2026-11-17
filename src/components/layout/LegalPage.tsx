@@ -1,8 +1,16 @@
 import PageHeader from "@/components/ui/PageHeader";
 
+/** One numbered point inside a section (for example, one of the liability points). */
+export interface LegalPoint {
+  title: string;
+  text: string;
+}
+
 export interface LegalSection {
   heading: string;
   paragraphs: string[];
+  /** Optional numbered points, shown beneath the paragraphs. */
+  points?: LegalPoint[];
   /**
    * Accepted so that existing pages that still carry it keep compiling.
    * It is never displayed.
@@ -42,7 +50,8 @@ function withLinks(text: string) {
  * Shared layout for the Privacy Policy and the Terms & Conditions.
  * Each section pairs a numbered heading (left, fixed in place on large screens
  * while the section is read) with its text (right), set at a comfortable
- * reading width. An optional date sits beneath all of the content.
+ * reading width. A section can also carry numbered points beneath its text.
+ * An optional date sits beneath all of the content.
  */
 export default function LegalPage({ title, sections, intro, updated }: LegalPageProps) {
   // Same title style as every other page: the last word in italics
@@ -82,6 +91,19 @@ export default function LegalPage({ title, sections, intro, updated }: LegalPage
                   {withLinks(paragraph)}
                 </p>
               ))}
+
+              {section.points && (
+                <ol className="space-y-8 pt-4">
+                  {section.points.map((point, pointIndex) => (
+                    <li key={point.title}>
+                      <h3 className="type-mono text-paper">
+                        <span className="text-ash">{pointIndex + 1}.</span> {point.title}
+                      </h3>
+                      <p className="mt-3 max-w-[62ch]">{withLinks(point.text)}</p>
+                    </li>
+                  ))}
+                </ol>
+              )}
             </div>
           </section>
         ))}
